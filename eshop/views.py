@@ -7,7 +7,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.utils import timezone
 from django.core.mail import send_mail
-from eshop.utils import generate_token, send_verification_mail
+from eshop.utils import generate_token, send_verification_mail, generate_forgotPassword_token, send_verification_mail1
 
 
 class ResetPasswordView(TemplateView):
@@ -24,7 +24,7 @@ class ResetPasswordView(TemplateView):
             form.save()
             update_session_auth_hash(request, request.user)  # Important to keep the user logged in
             messages.success(request, "password changed successfully!")
-            return redirect('selles_dashboard')
+            return redirect('seller_dashboard')
         else:
             return render(request, self.template_name, {'form': form})
 
@@ -125,6 +125,64 @@ class EmailVerification(TemplateView):
         else:
             messages.info(request, "email already verified")
             return redirect('signup')
+
+
+class ForgotPasswordView(TemplateView):
+    template_name = "eshop/forgot_password_form.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
+    
+    def post(self, request):
+        email = request.POST.get('email')
+        user = User.objects.filter(email=email).first()
+        if user:
+            user.forgot_password_token = generate_forgotPassword_token()
+            user.forgot_password_sent_at = timezone.now()
+            user.reset_password = False
+            user.save()
+            send_verification_mail1(user)
+            messages.success(request, "Please check your email")
+        else:
+            messages.error(request, "Email does not exit")
+        return render(request, self.template_name)
+
+
+class ForgotPasswordDoneView(TemplateView):
+    template_name = "eshop/forgot_password_done.html"
+
+    def get(self, request):
+        token = request.GET.get('token')
+        user = User.objects.filter(forgot_password_token=token).first()
+
+        if user and not user.reset_password:
+            if user.forgot_password_sent_at + timezone.timedelta(minutes=2) > timezone.now():
+                return render(request, self.template_name, {'token': token})
+            else:
+                messages.info(request, "invalid link")
+                return redirect('forgot_password_form')
+        else:
+            messages.error(request, "user does not exit")
+            return redirect('forgot_password_form')
+        
+    def post(self, request):
+        token = request.POST.get('token')
+        password = request.POST.get('password1')
+        user = User.objects.filter(forgot_password_token=token).first()
+
+        if user and not user.reset_password:
+            if user.forgot_password_sent_at + timezone.timedelta(minutes=2) > timezone.now():
+                user.reset_password = True
+                user.set_password(password)
+                user.save()
+                messages.success(request, "successfully changed password!")
+                return redirect('login')
+            else:
+                messages.info(request, "invalid link")
+                return redirect('forgot_password_form')
+        else:
+            messages.error(request, "user does not exit")
+            return redirect('forgot_password_form')
 
 
 class CheckmailView(TemplateView):
