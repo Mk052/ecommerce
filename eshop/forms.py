@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
-from eshop.models import User
+from eshop.models import User, Product
 from django.core.exceptions import ValidationError
 
 
@@ -17,6 +17,60 @@ class CustomUserCreationForm(UserCreationForm):
             "reset_password",
             "user_type",
         ]
+
+
+class AddProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = [
+            "title",
+            "description",
+            "image",
+            "price",
+            "stock",
+            "category",
+         ]
+        widgets = {
+            "title": forms.TextInput(attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'id': 'productName',
+                'placeholder': 'Product Name',
+                'required': True
+            }),
+            "description": forms.Textarea(attrs={
+                'class': 'form-control',
+                'id': 'productDescription',
+                'rows': 3,
+                'placeholder': 'Description',
+                'required': True
+            }),
+            "price": forms.NumberInput(attrs={
+                'class': 'form-control',
+                'id': 'productPrice',
+                'placeholder': 'Price',
+                'step': '0.01',
+                'required': True
+            }),
+            "stock": forms.NumberInput(attrs={
+                'class': 'form-control',
+                'id': 'productQuantity',
+                'placeholder': 'Quantity in Stock',
+                'required': True
+            }),
+            "category": forms.Select(attrs={
+                'class': 'form-select',
+                'id': 'productCategory',
+                'placeholder': 'Select a category',
+                'required': True
+            }),
+            "image": forms.FileInput(attrs={
+                'class': 'form-control',
+                'id': 'productImage',
+                'accept': 'image/*',
+                'required': True
+            }),
+        }
 
 
 class ResetPasswordForm(PasswordChangeForm):

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
-from eshop.forms import CustomUserCreationForm, ResetPasswordForm
+from eshop.forms import CustomUserCreationForm, ResetPasswordForm, AddProductForm
 from django.contrib.auth import authenticate, login, logout
 from eshop.models import User, Product
 from django.contrib.auth import update_session_auth_hash
@@ -72,6 +72,24 @@ class HomeView(TemplateView):
 
 class AddProductView(TemplateView):
     template_name = "seller/add_product.html"
+
+    def get(self, request):
+        form = AddProductForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = AddProductForm(request.POST, request.FILES)
+        print(form.is_valid)
+        print(form.errors)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.user = request.user
+            product = form.save()
+            messages.success(request, "successfully added product")
+            return redirect('seller_dashboard')
+        else:
+            form = AddProductForm()
+            return render(request, self.template_name, {'form': form})
 
 
 class LoginView(TemplateView):

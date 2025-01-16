@@ -23,4 +23,5 @@ urlpatterns = [
     path('shop/', ShopView.as_view(), name='shop'),
     path('my-order/', MyOrderView.as_view(), name='my_order'),
     path('buyer/profile/', BuyerProfile.as_view(), name='buyer_profile'),
+    path('add_product/', AddProductView.as_view(), name='add_product'),
 ]
