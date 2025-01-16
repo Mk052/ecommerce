@@ -11,7 +11,7 @@ from eshop.utils import generate_token, send_verification_mail, generate_forgotP
 
 
 class ResetPasswordView(TemplateView):
-    template_name = "seller/reset_password.html"
+    template_name = "reset_password.html"
     
     def get(self, request):
         form = ResetPasswordForm(request.user)
@@ -29,8 +29,6 @@ class ResetPasswordView(TemplateView):
             return render(request, self.template_name, {'form': form})
 
     
-
-
 class SellerDashboard(TemplateView):
     # template_name = "eshop/seller.html"
     template_name = "seller/my_products.html"
@@ -46,14 +44,34 @@ class SellerProfile(TemplateView):
     template_name = "seller/my_profile.html"
 
 
+class BuyerProfile(TemplateView):
+    template_name = "buyer/buyer_profile.html"
+
+
+class MyOrderView(TemplateView):
+    template_name = "buyer/my_order.html"
+
+
+class ShopView(TemplateView):
+    template_name = "eshop/shop.html"
+
+    def get(self, request):
+        products = Product.objects.all().order_by('-created_at')
+        return render(request, self.template_name, {'products': products})
+
+
 class HomeView(TemplateView):
-    template_name = "eshop/index.html"
+    template_name = "buyer/buyer_dashboard.html"
 
     def get(self, request):
         products = Product.objects.all()
         print("hii")
         print(products)
         return render(request, self.template_name, {'products': products})
+
+
+class AddProductView(TemplateView):
+    template_name = "seller/add_product.html"
 
 
 class LoginView(TemplateView):
@@ -76,6 +94,7 @@ class LoginView(TemplateView):
             elif user.user_type == "Buyer":
                 return redirect('home')
         else:
+            messages.error(request, "email or password invalid")
             return render(request, self.template_name)
 
 
@@ -85,7 +104,7 @@ class SignupView(TemplateView):
     def get(self, request):
         form = CustomUserCreationForm()
         return render(request, self.template_name, {'form': form})
-    
+
     def post(self, request):
         form = CustomUserCreationForm(request.POST)
         # print(form.is_valid)
