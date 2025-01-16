@@ -1,0 +1,12 @@
+{% extends 'base_dashboard.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    {% if messages %}
+    {% for message in messages %}
+    <h2>Email Verification</h2>
+    <p>{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}   
