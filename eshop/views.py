@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from eshop.forms import CustomUserCreationForm, ResetPasswordForm, AddProductForm
 from django.contrib.auth import authenticate, login, logout
-from eshop.models import User, Product
+from eshop.models import User, Product, Cart, CartItem
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.utils import timezone
 from django.core.mail import send_mail
+from django.contrib.auth.mixins import LoginRequiredMixin
 from eshop.utils import generate_token, send_verification_mail, generate_forgotPassword_token, send_verification_mail1
 
 
@@ -44,16 +45,61 @@ class SellerProfile(TemplateView):
     template_name = "seller/my_profile.html"
 
 
+class BuyerCartView(TemplateView):
+    template_name = "eshop/cart.html"
+
+    def get(self, request):
+        cart = Cart.objects.filter(user=request.user).first()
+        cart_item = CartItem.objects.filter(cart=cart).all()
+        return render(request, self.template_name, {'cart_item': cart_item})
+
+
 class BuyerProfile(TemplateView):
     template_name = "buyer/buyer_profile.html"
 
 
+class ProductDetailView(TemplateView):
+    template_name = "buyer/view_product.html"
+
+    def get(self, request, *args, **kwargs):
+        product_id = self.kwargs.get('product_id')
+        product = Product.objects.filter(id=product_id).first()
+        context = {
+            'product': product
+        }
+        return render(request, self.template_name, context)
+
+
 class MyOrderView(TemplateView):
     template_name = "buyer/my_order.html"
+    
+
+class AddToCartView(TemplateView, LoginRequiredMixin):
+    template_name = "eshop/shop.html"
+
+    def post(self, request, product_id):
+        product = Product.objects.filter(id=product_id).first()
+        cart = Cart.objects.filter(user=request.user).first()
+        if not cart:
+            cart = Cart.objects.create(user=request.user)
+        CartItem.objects.get_or_create(cart=cart, product=product)
+        return redirect('/shop')
+    
+
+class DeleteCartView(TemplateView, LoginRequiredMixin):
+    def post(self, request, **kwargs):
+        cart_item_id = self.kwargs.get("cart_item_id")
+        print(cart_item_id)
+        print("delete")
+        # carts = Cart.objects.filter(user=request.user).first()
+        cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()
+        cart_item.delete()
+        print("done")
+        return redirect('buyer_cart')
 
 
 class ShopView(TemplateView):
-    template_name = "eshop/shop.html"
+    template_name = "buyer/shop.html"
 
     def get(self, request):
         products = Product.objects.all().order_by('-created_at')
