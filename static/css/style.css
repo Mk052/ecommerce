@@ -9582,3 +9582,66 @@ a.text-dark:hover, a.text-dark:focus {
     transform: translateY(-15px);
   }
 }
+
+
+.sidebar {
+  min-height: 100vh;
+  background-color: #212529;
+}
+.sidebar .nav-link {
+  color: #fff;
+  padding: 1rem;
+}
+.sidebar .nav-link:hover {
+  background-color: #343a40;
+}
+.sidebar .nav-link.active {
+  background-color: #0d6efd;
+}
+.main-content {
+  padding: 20px;
+}
+.profile-section {
+  display: none;
+}
+.products-section {
+  display: none;
+}
+.active-section {
+  display: block;
+}
+.profile-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.profile-cover {
+  height: 200px;
+  background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+}
+.profile-image-container {
+  margin-top: -75px;
+}
+#imagePreview {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: none;
+  object-fit: cover;
+}
+.order-status {
+  width: 100px;
+}
+.product-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+.status-pending { color: #ffc107; }
+.status-confirmed { color: #0d6efd; }
+.status-shipped { color: #6f42c1; }
+.status-delivered { color: #198754; }
+.status-cancelled { color: #dc3545; }
