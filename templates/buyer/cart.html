@@ -21,39 +21,59 @@
                 <tbody class="align-middle">
                     {% for cart in cart_item %}
                     <tr>
-                        <td class="align-middle"><img src="{{ cart.product.image.url }}" alt="" style="width: 50px; height: 50px;">{{ cart.title }}</td>
-                        <td class="align-middle">Rs. {{ cart.price }}</td>
+                        <!-- Product Image and Title -->
+                        <td class="align-middle">
+                            <img src="{{ cart.product.image.url }}" alt="" style="width: 50px; height: 50px;">
+                            {{ cart.product.title }}
+                        </td>
+                
+                        <!-- Product Price -->
+                        <td class="align-middle">Rs. {{ cart.product.price }}</td>
+                
+                        <!-- Quantity Management -->
                         <td class="align-middle">
                             <div class="input-group quantity mx-auto" style="width: 100px;">
+                                <!-- Decrease Quantity -->
                                 <div class="input-group-btn">
-                                    <form method="POST" action="{% url "buyer_cartitem_increase" cart.id %}">
+                                    <form method="POST" action="{% url 'buyer_cartitem_decrease' cart.id %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-primary btn-minus" >
+                                        <button type="submit" class="btn btn-sm btn-primary btn-minus">
                                             <i class="fa fa-minus"></i>
                                         </button>
-                                    <form>
+                                    </form>
                                 </div>
-                                <p type="text" class="form-control form-control-sm bg-secondary text-center">{{ cart.quantity }}
+                
+                                <!-- Quantity Display -->
+                                <p class="form-control form-control-sm bg-secondary text-center">{{ cart.quantity }}</p>
+                
+                                <!-- Increase Quantity -->
                                 <div class="input-group-btn">
-                                    <form method="POST" action="{% url "buyer_cartitem_increase" cart.id %}">
+                                    <form method="POST" action="{% url 'buyer_cartitem_increase' cart.id %}">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-primary btn-plus">
                                             <i class="fa fa-plus"></i>
                                         </button>
-                                    </form>    
+                                    </form>
                                 </div>
                             </div>
                         </td>
-                        <td class="align-middle">Rs.{{ cart.price }}</td>
+                
+                        <!-- Subtotal -->
+                        <td class="align-middle">Rs. {{ cart.product.price }}</td>
+                
+                        <!-- Delete Item -->
                         <td class="align-middle">
-                            <form method="POST" action="{% url "delete_cart" cart.id %}">
+                            <form method="POST" action="{% url 'delete_cart' cart.id %}">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button>
-                            <form>
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
+                
             </table>
         </div>
         <div class="col-lg-4">

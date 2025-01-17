@@ -50,7 +50,7 @@ class BuyerCartView(TemplateView):
 
     def get(self, request):
         cart = Cart.objects.filter(user=request.user).first()
-        cart_item = CartItem.objects.filter(cart=cart).all()
+        cart_item = CartItem.objects.filter(cart=cart)
         return render(request, self.template_name, {'cart_item': cart_item})
 
 
@@ -78,20 +78,25 @@ class IncreaseQuantityToCartView(TemplateView, LoginRequiredMixin):
 
     def post(self, request, cart_item_id):
         cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()
-        if cart_item.quantity > 0:
+        print(cart_item.quantity)
+        if cart_item.quantity >= 0:
             cart_item.quantity += 1
             cart_item.save()
+        print("after increace",cart_item.quantity)
+        return redirect('buyer_cart')
 
 
-# class DecreaseQuantityToCartView(TemplateView, LoginRequiredMixin):
+class DecreaseQuantityToCartView(TemplateView, LoginRequiredMixin):
 
-#     def post(self, request, cart_item_id):
-#         cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()
-#         if cart_item.quantity > 0:
-#             cart_item.quantity -= 1
-#             cart_item.save()
-#         else:
-#             cart_item.delete()            
+    def post(self, request, cart_item_id):
+        cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()
+        print(cart_item.quantity)
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            cart_item.save()
+        print("after decresse", cart_item.quantity)
+        return redirect('buyer_cart')            
+
 
 class AddToCartView(TemplateView, LoginRequiredMixin):
 
