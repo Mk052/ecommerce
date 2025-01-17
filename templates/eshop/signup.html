@@ -157,16 +157,16 @@
                             <div class="text-center mt-3">
                                 <a href="{% url 'home' %}" class="text-decoration-none text-primary">Back?</a>
                             </div>
-                            
-                            <div class="text-center mt-4">
-                                <p class="text-muted">Or sign up with</p>
-                                <div class="social-login">
-                                    <a href="#" class="social-btn bg-primary"><i class="fab fa-facebook-f"></i></a>
-                                    <a href="#" class="social-btn bg-danger"><i class="fab fa-google"></i></a>
-                                    <a href="#" class="social-btn bg-info"><i class="fab fa-twitter"></i></a>
-                                </div>
+                            <div class="text-center mt-3">
+                                <p>If you have already an account<a href="{% url 'login' %}" class="text-decoration-none text-primary"> Login</a></p>
                             </div>
+                            
                         </form>
+                        {% if messages %}
+                                {% for i in messages %}
+                                    <p>{{ i }}</p>
+                                {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
