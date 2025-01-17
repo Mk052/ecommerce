@@ -11,12 +11,20 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from eshop.utils import generate_token, send_verification_mail, generate_forgotPassword_token, send_verification_mail1
 
 
-class ResetPasswordView(TemplateView):
-    template_name = "reset_password.html"
+# ************************************************** Reset(Change) Password Views (start) ********************************************* #
+class ResetPasswordView(TemplateView, LoginRequiredMixin): 
+    def get_template_names(self, request):
+        if request.user.user_type == "Seller":
+            template_name = "seller/reset_password.html"
+            return template_name
+        else:
+            template_name = "buyer/reset_password.html"
+            return template_name
     
     def get(self, request):
         form = ResetPasswordForm(request.user)
-        return render(request, self.template_name, {'form': form})
+        template_name = self.get_template_names(request)
+        return render(request, template_name, {'form': form})
     
     def post(self, request):
         form = ResetPasswordForm(request.user, request.POST)
@@ -27,11 +35,15 @@ class ResetPasswordView(TemplateView):
             messages.success(request, "password changed successfully!")
             return redirect('seller_dashboard')
         else:
-            return render(request, self.template_name, {'form': form})
+            template_name = self.get_template_names(request)
+            return render(request, template_name, {'form': form})
 
-    
+
+# ************************************************** Reset(Change) Password Views (End) ********************************************* #
+
+# ************************************************** Seller Dashboard Views (start) ********************************************* #
+
 class SellerDashboard(TemplateView):
-    # template_name = "eshop/seller.html"
     template_name = "seller/my_products.html"
 
     def get(self, request):
@@ -41,20 +53,38 @@ class SellerDashboard(TemplateView):
         return render(request, self.template_name, {'products': products})
 
 
-class SellerProfile(TemplateView):
+class SellerProfile(TemplateView, LoginRequiredMixin):
     template_name = "seller/my_profile.html"
 
 
-class BuyerCartView(TemplateView):
-    template_name = "buyer/cart.html"
+class AddProductView(TemplateView, LoginRequiredMixin):
+    template_name = "seller/add_product.html"
 
     def get(self, request):
-        cart = Cart.objects.filter(user=request.user).first()
-        cart_item = CartItem.objects.filter(cart=cart)
-        return render(request, self.template_name, {'cart_item': cart_item})
+        form = AddProductForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = AddProductForm(request.POST, request.FILES)
+        print(form.is_valid)
+        print(form.errors)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.user = request.user
+            product = form.save()
+            messages.success(request, "successfully added product")
+            return redirect('seller_dashboard')
+        else:
+            form = AddProductForm()
+            return render(request, self.template_name, {'form': form})
 
 
-class BuyerProfile(TemplateView):
+# ************************************************** Seller Dashboard Views (End) ********************************************* #
+
+# ************************************************** Seller Profile Views (start) ********************************************* #
+
+
+class BuyerProfile(TemplateView, LoginRequiredMixin):
     template_name = "buyer/buyer_profile.html"
 
 
@@ -64,14 +94,37 @@ class ProductDetailView(TemplateView):
     def get(self, request, *args, **kwargs):
         product_id = self.kwargs.get('product_id')
         product = Product.objects.filter(id=product_id).first()
+        # cart_item = CartItem.objects.filter(cart__user=request.user, product=product).first()
         context = {
             'product': product
         }
         return render(request, self.template_name, context)
 
 
-class MyOrderView(TemplateView):
+class MyOrderView(TemplateView, LoginRequiredMixin):
     template_name = "buyer/my_order.html"
+    
+# ************************************************** Buyer Cart Views (start) ********************************************* #
+
+
+class DisplayCartView(TemplateView):
+    template_name = "buyer/cart.html"
+
+    def get(self, request):
+        cart = Cart.objects.filter(user=request.user).first()
+        cart_item = CartItem.objects.filter(cart=cart)
+        return render(request, self.template_name, {'cart_item': cart_item})
+
+
+class AddToCartView(TemplateView, LoginRequiredMixin):
+
+    def post(self, request, product_id):
+        product = Product.objects.filter(id=product_id).first()
+        cart = Cart.objects.filter(user=request.user).first()
+        if not cart:
+            cart = Cart.objects.create(user=request.user)
+        CartItem.objects.get_or_create(cart=cart, product=product)
+        return redirect('/shop')
     
 
 class IncreaseQuantityToCartView(TemplateView, LoginRequiredMixin):
@@ -98,17 +151,6 @@ class DecreaseQuantityToCartView(TemplateView, LoginRequiredMixin):
         return redirect('buyer_cart')            
 
 
-class AddToCartView(TemplateView, LoginRequiredMixin):
-
-    def post(self, request, product_id):
-        product = Product.objects.filter(id=product_id).first()
-        cart = Cart.objects.filter(user=request.user).first()
-        if not cart:
-            cart = Cart.objects.create(user=request.user)
-        CartItem.objects.get_or_create(cart=cart, product=product)
-        return redirect('/shop')
-    
-
 class DeleteCartView(TemplateView, LoginRequiredMixin):
     def post(self, request, **kwargs):
         cart_item_id = self.kwargs.get("cart_item_id")
@@ -120,6 +162,8 @@ class DeleteCartView(TemplateView, LoginRequiredMixin):
         print("done")
         return redirect('buyer_cart')
 
+
+# ************************************************** Buyer Cart Views (end) ********************************************* #
 
 class ShopView(TemplateView):
     template_name = "buyer/shop.html"
@@ -134,31 +178,13 @@ class HomeView(TemplateView):
 
     def get(self, request):
         products = Product.objects.all()
-        print("hii")
-        print(products)
-        return render(request, self.template_name, {'products': products})
+        context = {
+            'products': products,
+        }
+        return render(request, self.template_name, context)
 
 
-class AddProductView(TemplateView):
-    template_name = "seller/add_product.html"
-
-    def get(self, request):
-        form = AddProductForm()
-        return render(request, self.template_name, {'form': form})
-
-    def post(self, request):
-        form = AddProductForm(request.POST, request.FILES)
-        print(form.is_valid)
-        print(form.errors)
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.user = request.user
-            product = form.save()
-            messages.success(request, "successfully added product")
-            return redirect('seller_dashboard')
-        else:
-            form = AddProductForm()
-            return render(request, self.template_name, {'form': form})
+# ************************************************** Login, Signup, Logout  Views (start) ********************************************* #
 
 
 class LoginView(TemplateView):
@@ -210,6 +236,19 @@ class SignupView(TemplateView):
             return redirect('checkmail')
         else:
             return render(request, self.template_name, {'form': form})
+        
+
+class LogoutView(TemplateView, LoginRequiredMixin):
+    template_name = "eshop/hello.html"
+
+    def get(self, request):
+        logout(request)
+        return redirect('login')
+
+
+# ************************************************** Login, Signup, Logout  Views (end) ********************************************* #
+
+# ************************************************** Email Verification  Views (start) ********************************************* #
 
 
 class EmailVerification(TemplateView):
@@ -231,6 +270,14 @@ class EmailVerification(TemplateView):
         else:
             messages.info(request, "email already verified")
             return redirect('signup')
+
+
+class CheckmailView(TemplateView):
+    template_name = "eshop/checkmail.html"
+
+# ************************************************** Email Verification  Views (end) ********************************************* #
+
+# ************************************************** Forgot Password  Views (start) ********************************************* #
 
 
 class ForgotPasswordView(TemplateView):
@@ -290,9 +337,7 @@ class ForgotPasswordDoneView(TemplateView):
             messages.error(request, "user does not exit")
             return redirect('forgot_password_form')
 
-
-class CheckmailView(TemplateView):
-    template_name = "eshop/checkmail.html"
+# ************************************************** Forgot Password  Views (end) ********************************************* #
 
     # def get(self, request, *args, **kwargs):
     #     # if the user is logged in redirecting user to appropriate view via login
@@ -300,13 +345,6 @@ class CheckmailView(TemplateView):
     #         return redirect("login")
 
     #     return render(request, self.template_name)
-
-class LogoutView(TemplateView):
-    template_name = "eshop/hello.html"
-
-    def get(self, request):
-        logout(request)
-        return redirect('login')
     
 
 class ProductView(TemplateView):
