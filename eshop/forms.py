@@ -13,8 +13,6 @@ class CustomUserCreationForm(UserCreationForm):
             "email",
             "password1",
             "password2",
-            "is_email_verified",
-            "reset_password",
             "user_type",
         ]
 
