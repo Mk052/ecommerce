@@ -75,7 +75,6 @@ class MyOrderView(TemplateView):
     
 
 class AddToCartView(TemplateView, LoginRequiredMixin):
-    template_name = "eshop/shop.html"
 
     def post(self, request, product_id):
         product = Product.objects.filter(id=product_id).first()
