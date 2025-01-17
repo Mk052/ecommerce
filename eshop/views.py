@@ -46,7 +46,7 @@ class SellerProfile(TemplateView):
 
 
 class BuyerCartView(TemplateView):
-    template_name = "eshop/cart.html"
+    template_name = "buyer/cart.html"
 
     def get(self, request):
         cart = Cart.objects.filter(user=request.user).first()
@@ -73,6 +73,25 @@ class ProductDetailView(TemplateView):
 class MyOrderView(TemplateView):
     template_name = "buyer/my_order.html"
     
+
+class IncreaseQuantityToCartView(TemplateView, LoginRequiredMixin):
+
+    def post(self, request, cart_item_id):
+        cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()
+        if cart_item.quantity > 0:
+            cart_item.quantity += 1
+            cart_item.save()
+
+
+# class DecreaseQuantityToCartView(TemplateView, LoginRequiredMixin):
+
+#     def post(self, request, cart_item_id):
+#         cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()
+#         if cart_item.quantity > 0:
+#             cart_item.quantity -= 1
+#             cart_item.save()
+#         else:
+#             cart_item.delete()            
 
 class AddToCartView(TemplateView, LoginRequiredMixin):
 

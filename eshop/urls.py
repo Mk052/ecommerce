@@ -5,7 +5,8 @@ from eshop.views import (
     ProductView, SellerDashboard, SellerProfile, CheckmailView, EmailVerification,
     ForgotPasswordDoneView, ForgotPasswordView, ResetPasswordView, AddProductView,
     ShopView, BuyerProfile, MyOrderView, ProductDetailView, AddToCartView,
-    DeleteCartView, BuyerCartView)
+    DeleteCartView, BuyerCartView, IncreaseQuantityToCartView,
+   )
 
 urlpatterns = [
     path('', HomeView.as_view(), name="home"),
@@ -29,5 +30,7 @@ urlpatterns = [
     path('buyer/add_cart/<int:product_id>/', AddToCartView.as_view(), name='add_cart'),
     path('buyer/delete_cart/<int:cart_item_id>/', DeleteCartView.as_view(), name='delete_cart'),
     path('buyer/cart/', BuyerCartView.as_view(), name='buyer_cart'),
+    path('buyer/cart/<int:cart_item_id>/', IncreaseQuantityToCartView.as_view(), name='buyer_cartitem_increase'),
+#     path('buyer/cart/<int:cart_item_id>/', DecreaseQuantityToCartView.as_view(), name='buyer_cartitem_decrease),
 
 ]
