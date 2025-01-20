@@ -75,6 +75,12 @@
                 </tbody>
                 
             </table>
+            <br>
+            {% if messages %}
+                {% for i in messages %}
+                    {{ i }}
+                {% endfor %}
+            {% endif %}
         </div>
         {% comment %} <div class="col-lg-4">
             <form class="mb-5" action="">

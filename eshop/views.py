@@ -47,9 +47,11 @@ class SellerDashboard(TemplateView):
 
     def get(self, request):
         user = request.user
-        # if request.user.is_authenticated and request.user.user_type == "Seller":
-        products = Product.objects.filter(user=user).order_by("-created_at")
-        return render(request, self.template_name, {'products': products})
+        if request.user.is_authenticated and request.user.user_type == "Seller":
+            products = Product.objects.filter(user=user).order_by("-created_at")
+            return render(request, self.template_name, {'products': products})
+        else:
+            return redirect('home')
 
 
 class SellerProfile(LoginRequiredMixin, TemplateView):
@@ -134,9 +136,12 @@ class IncreaseQuantityToCartView(TemplateView):
     def post(self, request, cart_item_id):
         cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()
         print(cart_item.quantity)
-        if cart_item.quantity >= 0:
-            cart_item.quantity += 1
-            cart_item.save()
+        if cart_item.product.stock > cart_item.quantity:
+            if cart_item.quantity >= 0:
+                cart_item.quantity += 1
+                cart_item.save()
+        else:
+            messages.info(request, "you can't order the product or stock is out of range")
         print("after increace",cart_item.quantity)
         return redirect('buyer_cart')
 
