@@ -45,7 +45,7 @@
                 </div>
                 <h3 class="font-weight-semi-bold mb-4">Rs.{{ product.price }}</h3>
                 <p class="mb-4">{{ product.description }}</p>
-                <div class="d-flex mb-3">
+                {% comment %} <div class="d-flex mb-3">
                     <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
                     <form>
                         <div class="custom-control custom-radio custom-control-inline">
@@ -94,13 +94,15 @@
                             <label class="custom-control-label" for="color-5">Green</label>
                         </div>
                     </form>
-                </div>
+                </div> {% endcomment %}
+                {% if request.user.user_type == 'Buyer' %}
                 <div class="d-flex align-items-center mb-4 pt-2">
                     <form method="POST" action="{% url 'add_cart' product.id %}">
                         {% csrf_token %}
                         <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
                     </form>
                 </div>
+                {% endif %}
                 <div class="d-flex pt-2">
                     <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
                     <div class="d-inline-flex">

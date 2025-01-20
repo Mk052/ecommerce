@@ -41,7 +41,7 @@
                         <a class="nav-link {% block shop-active %}{% endblock shop-active %}" href="{% url "shop" %}" onclick="showSection('profile')">
                             <i class="fas fa-store"></i> Shop
                         </a>
-                        <a class="nav-link {% block my-order-active %}{% endblock my-order-active %}" href="{% url "my_order" %}" onclick="showSection('profile')">
+                        {% comment %} <a class="nav-link {% block my-order-active %}{% endblock my-order-active %}" href="{% url "my_order" %}" onclick="showSection('profile')">
                             <i class="fas fa-lock me-2"></i>My Order
                         </a>
                         
@@ -50,7 +50,7 @@
                         </a>
                         <a class="nav-link {% block reset4-active %}{% endblock reset4-active %}" href="#" onclick="showSection('profile')">
                             <i class="fas fa-lock me-2"></i>About
-                        </a>
+                        </a> {% endcomment %}
                         <a class="nav-link {% block cart-active %}{% endblock cart-active %}" href="{% url 'buyer_cart' %}" onclick="showSection('profile')">
                             <i class="fas fa-shopping-cart"></i> Cart
                         </a>
