@@ -5,11 +5,11 @@
 
 {% block content %}
   <!-- Products Section -->
-  {% comment %} {% if messages %}
+ {% if messages %}
     {% for i in messages %}
      <p>{{ i }}</p>
     {% endfor %}
-  {% endif %} {% endcomment %}
+  {% endif %} 
   <div class="products-section active-section">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2>My Products</h2>
