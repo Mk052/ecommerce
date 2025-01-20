@@ -102,6 +102,7 @@ class ProductDetailView(TemplateView):
 
 class MyOrderView(LoginRequiredMixin, TemplateView):
     template_name = "buyer/my_order.html"
+    login_url = "/login/"
     
 # ************************************************** Buyer Cart Views (start) ********************************************* #
 
@@ -270,21 +271,11 @@ class EmailVerification(TemplateView):
                 return redirect('signup')
         else:
             messages.info(request, "email already verified")
-            return redirect('signup')
+            return redirect('login')
 
 
 class CheckmailView(TemplateView):
     template_name = "eshop/checkmail.html"
-
-    def get(self, request):
-        if not request.user.is_authenticated:
-            return redirect('login')
-
-        user = request.user
-        context = {
-            'user': user,
-        }
-        return render(request, self.template_name, context)
 
 
 # ************************************************** Email Verification  Views (end) ********************************************* #
