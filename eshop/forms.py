@@ -14,7 +14,72 @@ class CustomUserCreationForm(UserCreationForm):
             "password1",
             "password2",
             "user_type",
+            "address",
+            "image",
+            "phone_number",
         ]
+        widgets = {
+            "first_name": forms.TextInput(attrs={
+                'type': 'text',
+                'label': 'First Name',
+                'class': 'form-control',
+                'placeholder': 'First Name',
+                'required': True
+            }),
+            "last_name": forms.TextInput(attrs={
+                'type': 'text',
+                'label': 'Last Name',
+                'class': 'form-control',
+                'placeholder': 'Last Name',
+                'required': True
+            }),
+            "email": forms.TextInput(attrs={
+                'type': 'text',
+                'label': 'Email',
+                'class': 'form-control',
+                'placeholder': 'Email',
+                'required': True
+            }),
+            "password1": forms.PasswordInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Password',
+                'required': True,
+                'label': 'Password'
+            }),
+            "password2": forms.PasswordInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Confirm Password',
+                'required': True,
+                'label': 'Confirm Password'
+            }),
+            "user_type": forms.Select(attrs={
+                'class': 'form-select',
+                'label': 'User Type',
+                'placeholder': 'Select user type',
+                'required': True
+            }),
+            "address": forms.Textarea(attrs={
+                'type': 'text',
+                'label': 'Address',
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Address',
+            }),
+            "image": forms.FileInput(attrs={
+                'label': 'Profile Picture',
+                'type': 'file',
+                'id': 'image',
+                'class': 'form-control',
+                'accept': 'image/*',
+             }),
+            "phone_number": forms.NumberInput(attrs={
+                'label': 'Phone Number',
+                'type': 'text',
+                'class': 'form-control',
+                'placeholder': 'Phone Number',
+                'step': '0.01',
+            }),
+        }
 
 
 class AddProductForm(forms.ModelForm):
