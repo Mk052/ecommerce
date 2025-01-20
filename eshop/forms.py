@@ -5,6 +5,26 @@ from django.core.exceptions import ValidationError
 
 
 class CustomUserCreationForm(UserCreationForm):
+
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'type': 'password',
+            'class': 'form-control',
+            'placeholder': 'Password',
+            'required': True
+        }),
+        label='Password'
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'type': 'password',
+            'class': 'form-control',
+            'placeholder': 'Confirm Password',
+            'required': True
+        }),
+        label='Confirm Password'
+    )
+
     class Meta:
         model = User
         fields = [
@@ -40,18 +60,18 @@ class CustomUserCreationForm(UserCreationForm):
                 'placeholder': 'Email',
                 'required': True
             }),
-            "password1": forms.PasswordInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Password',
-                'required': True,
-                'label': 'Password'
-            }),
-            "password2": forms.PasswordInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Confirm Password',
-                'required': True,
-                'label': 'Confirm Password'
-            }),
+            # "password1": forms.PasswordInput(attrs={
+            #     'class': 'form-control',
+            #     'placeholder': 'Password',
+            #     'required': True,
+            #     'label': 'Password'
+            # }),
+            # "password2": forms.PasswordInput(attrs={
+            #     'class': 'form-control',
+            #     'placeholder': 'Confirm Password',
+            #     'required': True,
+            #     'label': 'Confirm Password'
+            # }),
             "user_type": forms.Select(attrs={
                 'class': 'form-select',
                 'label': 'User Type',
