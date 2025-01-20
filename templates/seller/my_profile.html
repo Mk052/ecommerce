@@ -1,0 +1,44 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block my-profile-active %}active{% endblock my-profile-active %}
+
+{% block content %}
+  <!-- Profile Section -->
+  <div class="profile-section active-section">
+    <h2 class="mb-4">My Profile</h2>
+    <div class="card">
+      <div class="card-body">
+        <form>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">First Name</label>
+              <input type="text" class="form-control" value="John" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Last Name</label>
+              <input type="text" class="form-control" value="Doe" />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" value="john.doe@example.com" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Phone</label>
+            <input type="tel" class="form-control" value="+1 234 567 8900" />
+          </div>
+          <div class="mb-3">
+            <label for="productImage" class="form-label">Product Image</label>
+            <input type="file" class="form-control" id="productImage" name="productImage" accept="image/*">
+        </div>
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            <textarea class="form-control">123 Main St, City, Country</textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
