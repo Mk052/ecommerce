@@ -44,9 +44,7 @@
                         <a class="nav-link {% block my-order-active %}{% endblock my-order-active %}" href="{% url "my_order" %}" onclick="showSection('profile')">
                             <i class="fas fa-lock me-2"></i>My Order
                         </a>
-                        <a class="nav-link {% block my-profile-active %}{% endblock my-profile-active %}" href="{% url "buyer_profile" %}" onclick="showSection('profile')">
-                            <i class="fas fa-lock me-2"></i>My Profile
-                        </a>
+                        
                         <a class="nav-link {% block reset3-active %}{% endblock reset3-active %}" href="#" onclick="showSection('profile')">
                             <i class="fas fa-lock me-2"></i>Contact
                         </a>
@@ -56,10 +54,13 @@
                         <a class="nav-link {% block cart-active %}{% endblock cart-active %}" href="{% url 'buyer_cart' %}" onclick="showSection('profile')">
                             <i class="fas fa-shopping-cart"></i> Cart
                         </a>
+                        {% if request.user.is_authenticated %}
                         <a class="nav-link {% block reset-active %}{% endblock reset-active %}" href="{% url 'reset_password' %}" onclick="showSection('profile')">
                             <i class="fas fa-lock me-2"></i>Reset Password
                         </a>
-                        {% if request.user.is_authenticated %}
+                        <a class="nav-link {% block my-profile-active %}{% endblock my-profile-active %}" href="{% url "buyer_profile" %}" onclick="showSection('profile')">
+                            <i class="fas fa-lock me-2"></i>My Profile
+                        </a>
                         <a class="nav-link" href="{% url "logout" %}">
                             <i class="fas fa-sign-out-alt me-2"></i>Logout
                         </a>
