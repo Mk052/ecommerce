@@ -1,0 +1,112 @@
+{% extends 'base1_dashboard.html' %}
+{% load static %}
+
+{% block my-profile-active %}active{% endblock my-profile-active %}
+
+{% block content %}
+    <div class="container">
+        <!-- Cover Photo -->
+        <div class="profile-cover rounded-top"></div>
+
+        <!-- Profile Content -->
+        <div class="bg-white shadow rounded-bottom p-4">
+            <div class="row">
+                <!-- Profile Image Section -->
+                <div class="col-md-4 text-center profile-image-container">
+                    <div class="position-relative">
+                        <img src="https://via.placeholder.com/150" alt="Profile" class="profile-image mb-3" id="currentProfileImage">
+                        <img id="imagePreview" src="#" alt="Image preview" class="mb-3">
+                        <div class="mt-2">
+                            <label class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-camera me-2"></i>Change Photo
+                                <input type="file" class="d-none" id="profileImageInput" accept="image/*" onchange="previewImage(this);">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Details Section -->
+                <div class="col-md-8">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="mb-0">Profile Details</h3>
+                        <button class="btn btn-primary" onclick="enableEdit()">
+                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        </button>
+                    </div>
+                    <form id="profileForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" value="John Doe" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" value="@johndoe" disabled>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" value="john.doe@example.com" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" value="+1 234 567 890" disabled>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-control" value="New York, USA" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Bio</label>
+                            <textarea class="form-control" rows="3" disabled>Web Developer with 5 years of experience in creating responsive and user-friendly websites.</textarea>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" value="1990-01-01" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" disabled>
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Social Links -->
+                        <h4 class="mb-3">Social Links</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="fab fa-linkedin"></i></span>
+                                    <input type="url" class="form-control" value="linkedin.com/in/johndoe" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="fab fa-github"></i></span>
+                                    <input type="url" class="form-control" value="github.com/johndoe" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Save Changes Button (Hidden by default) -->
+                        <div class="text-end" id="saveButtons" style="display: none;">
+                            <button type="button" class="btn btn-secondary me-2" onclick="cancelEdit()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+   {% endblock %} 
+
