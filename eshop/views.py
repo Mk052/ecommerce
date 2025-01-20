@@ -6,7 +6,6 @@ from eshop.models import User, Product, Cart, CartItem
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.utils import timezone
-from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin
 from eshop.utils import generate_token, send_verification_mail, generate_forgotPassword_token, send_verification_mail1
 
@@ -53,11 +52,11 @@ class SellerDashboard(TemplateView):
         return render(request, self.template_name, {'products': products})
 
 
-class SellerProfile(TemplateView, LoginRequiredMixin):
+class SellerProfile(LoginRequiredMixin, TemplateView):
     template_name = "seller/my_profile.html"
 
 
-class AddProductView(TemplateView, LoginRequiredMixin):
+class AddProductView(TemplateView):
     template_name = "seller/add_product.html"
 
     def get(self, request):
@@ -101,14 +100,15 @@ class ProductDetailView(TemplateView):
         return render(request, self.template_name, context)
 
 
-class MyOrderView(TemplateView, LoginRequiredMixin):
+class MyOrderView(LoginRequiredMixin, TemplateView):
     template_name = "buyer/my_order.html"
     
 # ************************************************** Buyer Cart Views (start) ********************************************* #
 
 
-class DisplayCartView(TemplateView):
+class DisplayCartView(LoginRequiredMixin, TemplateView):
     template_name = "buyer/cart.html"
+    login_url = '/login/'
 
     def get(self, request):
         cart = Cart.objects.filter(user=request.user).first()
@@ -116,7 +116,8 @@ class DisplayCartView(TemplateView):
         return render(request, self.template_name, {'cart_item': cart_item})
 
 
-class AddToCartView(TemplateView, LoginRequiredMixin):
+class AddToCartView(LoginRequiredMixin, TemplateView):
+    login_url = '/login/'
 
     def post(self, request, product_id):
         product = Product.objects.filter(id=product_id).first()
@@ -127,7 +128,7 @@ class AddToCartView(TemplateView, LoginRequiredMixin):
         return redirect('/shop')
     
 
-class IncreaseQuantityToCartView(TemplateView, LoginRequiredMixin):
+class IncreaseQuantityToCartView(TemplateView):
 
     def post(self, request, cart_item_id):
         cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()
@@ -139,7 +140,7 @@ class IncreaseQuantityToCartView(TemplateView, LoginRequiredMixin):
         return redirect('buyer_cart')
 
 
-class DecreaseQuantityToCartView(TemplateView, LoginRequiredMixin):
+class DecreaseQuantityToCartView(TemplateView):
 
     def post(self, request, cart_item_id):
         cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()
@@ -151,7 +152,7 @@ class DecreaseQuantityToCartView(TemplateView, LoginRequiredMixin):
         return redirect('buyer_cart')            
 
 
-class DeleteCartView(TemplateView, LoginRequiredMixin):
+class DeleteCartView(TemplateView):
     def post(self, request, **kwargs):
         cart_item_id = self.kwargs.get("cart_item_id")
         print(cart_item_id)
@@ -219,9 +220,9 @@ class SignupView(TemplateView):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
-        form = CustomUserCreationForm(request.POST)
-        # print(form.is_valid)
-        # print(form.errors)
+        form = CustomUserCreationForm(request.POST, request.FILES)
+        print(form.is_valid)
+        print(form.errors)
         if form.is_valid():
             user = form.save()
             user.email_verified_token = generate_token()
@@ -274,6 +275,17 @@ class EmailVerification(TemplateView):
 
 class CheckmailView(TemplateView):
     template_name = "eshop/checkmail.html"
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        user = request.user
+        context = {
+            'user': user,
+        }
+        return render(request, self.template_name, context)
+
 
 # ************************************************** Email Verification  Views (end) ********************************************* #
 
