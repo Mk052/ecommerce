@@ -9,33 +9,51 @@
     <h2 class="mb-4">My Profile</h2>
     <div class="card">
       <div class="card-body">
-        <form>
+        <form method="POST" action="{% url "seller_profile" %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="productImage" class="form-label">Product Image</label>
+            <br>
+            <img src="{{ seller.image.url }}" alt="Profile Image" width="150" height="150">
+           <br>
+           <br>
+            {{ form.image }}
+        </div>
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">First Name</label>
-              <input type="text" class="form-control" value="John" />
+              {{ form.first_name }}
             </div>
             <div class="col-md-6">
               <label class="form-label">Last Name</label>
-              <input type="text" class="form-control" value="Doe" />
+              {{ form.last_name }}
             </div>
           </div>
           <div class="mb-3">
             <label class="form-label">Email</label>
-            <input type="email" class="form-control" value="john.doe@example.com" />
+            <p class="form-control">{{ seller.email }}</p>
           </div>
           <div class="mb-3">
             <label class="form-label">Phone</label>
-            <input type="tel" class="form-control" value="+1 234 567 8900" />
+            {{ form.phone_number }}
           </div>
-          <div class="mb-3">
-            <label for="productImage" class="form-label">Product Image</label>
-            <input type="file" class="form-control" id="productImage" name="productImage" accept="image/*">
-        </div>
+
           <div class="mb-3">
             <label class="form-label">Address</label>
-            <textarea class="form-control">123 Main St, City, Country</textarea>
+            {{ form.address }}
           </div>
+          <div class="mb-3">
+            <label for="productImage" class="form-label">Bio</label>
+            {{ form.bio }}
+        </div>
+        <div class="mb-3">
+          <label for="productImage" class="form-label">Date of Birth</label>
+          {{ form.date_of_birth }}
+      </div>
+      <div class="mb-3">
+        <label for="productImage" class="form-label">Gender</label>
+        {{ form.gender }}
+    </div>
           <button type="submit" class="btn btn-primary">Update Profile</button>
         </form>
       </div>
