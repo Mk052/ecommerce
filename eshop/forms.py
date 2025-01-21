@@ -152,7 +152,7 @@ class AddProductForm(forms.ModelForm):
                 'id': 'productImage',
                 'accept': 'image/*',
                 'required': True
-            }),
+            })
         }
 
 
@@ -173,3 +173,70 @@ class ResetPasswordForm(PasswordChangeForm):
             return ValidationError("password must contain a special characters")
         return password1
     
+
+class BuyerProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            "first_name",
+            "last_name",
+            # "email",
+            "address",    
+            "image",
+            "phone_number",
+            "bio",
+            "gender",
+            "date_of_birth"
+        ]
+        widgets = {
+            "first_name": forms.TextInput(attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'placeholder': 'First Name',
+            }),
+            "last_name": forms.TextInput(attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'placeholder': 'Last Name',
+            }),
+            # "email": forms.TextInput(attrs={
+            #     'type': 'text',
+            #     'class': 'form-control',
+            #     'placeholder': 'Email',
+            #     'disabled': True
+            # }),
+            "address": forms.Textarea(attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Address',
+            }),
+            "image": forms.FileInput(attrs={
+                'type': 'file',
+                'id': 'image',
+                'class': 'form-control',
+                'accept': 'image/*',
+             }),
+            "phone_number": forms.NumberInput(attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'placeholder': 'Phone Number',
+                'step': '0.01',
+            }),
+            "gender": forms.Select(attrs={
+                'type': 'form-select',
+                'class': 'form-control',
+                'placeholder': 'gender',
+            }),
+            "bio": forms.TextInput(attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'placeholder': 'Bio',
+            }),
+            "date_of_birth": forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control',
+                'placeholder': 'Date of Birth',
+            })
+            
+        }

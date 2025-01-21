@@ -18,6 +18,11 @@ class User(AbstractUser, TimestampedModel):  # extend AbstractUser to retain the
         ('Buyer', 'Buyer'),
         ('Seller', 'Seller'),
     ]
+    GENDER = [
+        ('Female', 'Female'),
+        ('Male', 'Male'),
+        ('Other', 'Other'),
+    ]
     username = None
     full_name = models.CharField(max_length=30)
     email = models.EmailField(unique=True)
@@ -29,8 +34,11 @@ class User(AbstractUser, TimestampedModel):  # extend AbstractUser to retain the
     forgot_password_token = models.CharField(max_length=100, blank=True, null=True)
     forgot_password_sent_at = models.DateTimeField(blank=True, null=True)
     address = models.TextField(null=True, blank=True)
-    image = models.ImageField(upload_to='images/')
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
+    bio = models.TextField(null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=100, choices=GENDER, null=True, blank=True)
 
     # Custom manager
     objects = (CustomUserManager())  # CustomUserManager is a custom class (defined separately) that provides methods for creating both regular users and superusers.
@@ -40,7 +48,7 @@ class User(AbstractUser, TimestampedModel):  # extend AbstractUser to retain the
 
     def __str__(self):
         return self.email
-
+    
 
 class Category(TimestampedModel):
     name = models.CharField(max_length=100)

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
-from eshop.forms import CustomUserCreationForm, ResetPasswordForm, AddProductForm
+from eshop.forms import CustomUserCreationForm, ResetPasswordForm, AddProductForm, BuyerProfileForm
 from django.contrib.auth import authenticate, login, logout
 from eshop.models import User, Product, Cart, CartItem
 from django.contrib.auth import update_session_auth_hash
@@ -51,17 +51,46 @@ class SellerDashboard(TemplateView):
             products = Product.objects.filter(user=user).order_by("-created_at")
             return render(request, self.template_name, {'products': products})
         else:
-            return redirect('home')
+            return redirect('login')
 
 
 class SellerProfile(LoginRequiredMixin, TemplateView):
     template_name = "seller/my_profile.html"
+
+    def get(self, request):
+        if request.user.user_type != "Seller":
+            return redirect('login')
+        seller = request.user
+
+        profile = User.objects.filter(id=seller.id).first()
+        # print(buyer, profile)
+        form = BuyerProfileForm(instance=profile)
+        return render(request, self.template_name, {'form': form, 'seller' : seller})
+    
+    def post(self, request):
+        print("hello")
+        buyer = request.user.id
+        profile = User.objects.filter(id=buyer).first()
+        # print(buyer, profile)
+        form = BuyerProfileForm(request.POST, request.FILES, instance=profile)
+        print(form.is_valid)
+        print(form.errors)
+        # breakpoint()
+        if form.is_valid():
+            form.save()
+            messages.success(request, "profile updated successfully!")
+            return redirect('seller_dashboard')
+        else:
+            print("not work")
+            return render(request, self.template_name, {'form': form})
 
 
 class AddProductView(TemplateView):
     template_name = "seller/add_product.html"
 
     def get(self, request):
+        if request.user.user_type != "Seller":
+            return redirect('login')
         form = AddProductForm()
         return render(request, self.template_name, {'form': form})
 
@@ -82,11 +111,42 @@ class AddProductView(TemplateView):
 
 # ************************************************** Seller Dashboard Views (End) ********************************************* #
 
-# ************************************************** Seller Profile Views (start) ********************************************* #
+# ************************************************** Buyer Profile Views (start) ********************************************* #
 
 
 class BuyerProfile(TemplateView, LoginRequiredMixin):
     template_name = "buyer/buyer_profile.html"
+
+    def get(self, request):
+        if request.user.user_type != "Buyer":
+            return redirect('login')
+        buyer = request.user
+
+        profile = User.objects.filter(id=buyer.id).first()
+        # print(buyer, profile)
+        form = BuyerProfileForm(instance=profile)
+        return render(request, self.template_name, {'form': form, 'buyer': buyer})
+    
+    def post(self, request):
+        print("hello")
+        buyer = request.user.id
+        profile = User.objects.filter(id=buyer).first()
+        # print(buyer, profile)
+        form = BuyerProfileForm(request.POST, request.FILES, instance=profile)
+        print(form.is_valid)
+        print(form.errors)
+        # breakpoint()
+        if form.is_valid():
+            form.save()
+            messages.success(request, "profile updated successfully!")
+            return redirect('home')
+        else:
+            print("not work")
+            return render(request, self.template_name, {'form': form})
+
+
+
+
 
 
 class ProductDetailView(TemplateView):
@@ -141,7 +201,7 @@ class IncreaseQuantityToCartView(TemplateView):
                 cart_item.quantity += 1
                 cart_item.save()
         else:
-            messages.info(request, "you can't order the product or stock is out of range")
+            messages.info(request, "you can't order the product or product out of stock")
         print("after increace",cart_item.quantity)
         return redirect('buyer_cart')
 
@@ -363,3 +423,4 @@ class ProductView(TemplateView):
         print("hii")
         print(products)
         return render(request, self.template_name, {'products': products})
+
