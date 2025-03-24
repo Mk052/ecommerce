@@ -11,7 +11,7 @@ from eshop.utils import generate_token, send_verification_mail, generate_forgotP
 
 
 # ************************************************** Reset(Change) Password Views (start) ********************************************* #
-class ResetPasswordView(TemplateView, LoginRequiredMixin): 
+class ResetPasswordView(TemplateView, LoginRequiredMixin):
     def get_template_names(self, request):
         if request.user.user_type == "Seller":
             template_name = "seller/reset_password.html"
@@ -19,12 +19,12 @@ class ResetPasswordView(TemplateView, LoginRequiredMixin):
         else:
             template_name = "buyer/reset_password.html"
             return template_name
-    
+
     def get(self, request):
         form = ResetPasswordForm(request.user)
         template_name = self.get_template_names(request)
         return render(request, template_name, {'form': form})
-    
+
     def post(self, request):
         form = ResetPasswordForm(request.user, request.POST)
 
@@ -65,8 +65,8 @@ class SellerProfile(LoginRequiredMixin, TemplateView):
         profile = User.objects.filter(id=seller.id).first()
         # print(buyer, profile)
         form = BuyerProfileForm(instance=profile)
-        return render(request, self.template_name, {'form': form, 'seller' : seller})
-    
+        return render(request, self.template_name, {'form': form, 'seller': seller})
+
     def post(self, request):
         print("hello")
         buyer = request.user.id
@@ -145,10 +145,6 @@ class BuyerProfile(TemplateView, LoginRequiredMixin):
             return render(request, self.template_name, {'form': form})
 
 
-
-
-
-
 class ProductDetailView(TemplateView):
     template_name = "buyer/view_product.html"
 
@@ -165,7 +161,7 @@ class ProductDetailView(TemplateView):
 class MyOrderView(LoginRequiredMixin, TemplateView):
     template_name = "buyer/my_order.html"
     login_url = "/login/"
-    
+
 # ************************************************** Buyer Cart Views (start) ********************************************* #
 
 
@@ -237,6 +233,25 @@ class ShopView(TemplateView):
 
     def get(self, request):
         products = Product.objects.all().order_by('-created_at')
+        return render(request, self.template_name, {'products': products})
+    
+    def post(self, request):
+        search_item = request.POST.get('search')
+        sort_by = request.POST.get('sort_by')
+        print(sort_by)
+        print(search_item)
+        if search_item:
+            products = Product.objects.filter(title__icontains=search_item)
+            print(products)
+            return render(request, self.template_name, {'products': products, 'search_item': search_item})
+        if sort_by == "high":
+            products = Product.objects.all().order_by("-price")
+        elif sort_by == "low":
+            products = Product.objects.all().order_by("price")
+        elif sort_by == "latest":
+            products = Product.objects.all().order_by("-created_at")
+        else:
+            products = Product.objects.all().order_by('-created_at')
         return render(request, self.template_name, {'products': products})
 
 
