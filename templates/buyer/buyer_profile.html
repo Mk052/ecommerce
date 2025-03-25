@@ -14,20 +14,38 @@
                 <form method="POST" action="{% url "buyer_profile" %}" enctype="multipart/form-data">
                     {% csrf_token %}
                 <!-- Profile Image Section -->
-                <div class="col-md-4 text-center profile-image-container">
+                 {% comment %} <div class="col-md-4 text-center profile-image-container">
                     <div class="position-relative">
-                        <img src="{{ buyer.image.url }}" alt="Profile" class="profile-image mb-3" id="currentProfileImage">
+                        <img src="{% if buyer.image.url %}{{ buyer.image.url }}{% else %}{% static 'img/download.png' %}{% endif %}" alt="Profile" class="profile-image mb-3" id="currentProfileImage">
                     
                         <div class="mt-2">
                             <label class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-camera me-2"></i>Change Photo
                                 {{ form.image }}
-                                {% comment %} <input type="file" class="d-none" id="profileImageInput" accept="image/*" onchange="previewImage(this);"> {% endcomment %}
+                                <input type="file" class="d-none" id="profileImageInput" accept="image/*" onchange="previewImage(this);"> 
                             </label>
                         </div>
                     </div>
                 </div>
-
+                 {% endcomment %}
+                 <div class="col-md-4 text-center profile-image-container">
+                    <div class="position-relative">
+                      <!-- Profile Image with Fallback -->
+                      <img src="{% if buyer.image %}{{ buyer.image.url }}{% else %}{% static 'img/download.png' %}{% endif %}" 
+                           alt="Profile" 
+                           class="profile-image mb-3" 
+                           id="currentProfileImage">
+                  
+                      <!-- Change Photo Button with File Input -->
+                      <div class="mt-2">
+                        <label class="btn btn-outline-primary btn-sm" for="profileImageInput">
+                          <i class="fas fa-camera me-2"></i> Change Photo
+                        </label>
+                        <input type="file" class="d-none" id="profileImageInput" name="image" accept="image/*" onchange="previewImage(event)">
+                      </div>
+                    </div>
+                  </div>
+                  
                 <!-- Profile Details Section -->
                 <div class="col-md-8">
                     {% comment %} <div class="d-flex justify-content-between align-items-center mb-4">

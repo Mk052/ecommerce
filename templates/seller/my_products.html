@@ -6,9 +6,9 @@
 {% block content %}
   <!-- Products Section -->
  {% if messages %}
-    {% for i in messages %}
-     <p>{{ i }}</p>
-    {% endfor %}
+    {% for i in messages %} 
+    <p class="alert alert-{{ i.tags }}">{{ i }}</p>             
+    {% endfor %}    
   {% endif %} 
   <div class="products-section active-section">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -27,7 +27,7 @@
           </div>
         </div>
       {% endfor %}
-    </div>
+      </div>
 
     {% comment %} <div class="card">
       <div class="card-body">

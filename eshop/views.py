@@ -233,13 +233,39 @@ class ShopView(TemplateView):
 
     def get(self, request):
         products = Product.objects.all().order_by('-created_at')
+        price_ranges = request.GET.getlist('price_range')
+        print("hi", price_ranges)
+        if price_ranges:
+            minm, maxm, count = 0, 0, 0
+            for price_range in price_ranges:
+                min_price, max_price = map(int, price_range.split('-'))
+                if count == 0:
+                    minm = min_price
+                    count = 1
+                minm = min_price if minm > min_price else minm
+                # print(minm)
+                maxm = max_price if maxm < max_price else maxm
+                # print(maxm)
+            print(minm, maxm)
+            products = Product.objects.filter(price__gte=minm, price__lte=maxm)
         return render(request, self.template_name, {'products': products})
     
     def post(self, request):
         search_item = request.POST.get('search')
         sort_by = request.POST.get('sort_by')
-        print(sort_by)
-        print(search_item)
+        # price_ranges = request.GET.getlist('price_range')
+        # print(sort_by)
+        # print(search_item)
+        # print("hi", price_ranges)
+        # for price_range in price_ranges:
+        #     min_price, max_price = map(int, price_ranges.split('-'))
+        #     print(min_price, max_price)
+        # if price_ranges:
+        #     filters = []
+        #     for price_range in price_ranges:
+        #         min_price, max_price = map(int, price_range.split('-'))
+        #         filters.append((min_price, max_price))
+        
         if search_item:
             products = Product.objects.filter(title__icontains=search_item)
             print(products)

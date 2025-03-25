@@ -12,7 +12,7 @@
         <form method="POST" action="{% url "seller_profile" %}" enctype="multipart/form-data">
           {% csrf_token %}
           <div class="mb-3">
-            <label for="productImage" class="form-label">Product Image</label>
+            <label for="productImage" class="form-label">User Image</label>
             <br>
             <img src="{{ seller.image.url }}" alt="Profile Image" width="150" height="150">
            <br>
