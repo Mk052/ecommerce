@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="{% static 'img/favicon.ico' %}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+
+    <!-- Font Awesome -->
+
+    <link href="css/theme-css/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+   
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left Sidebar -->
+            <div class="col-md-2 p-0 sidebar">
+                <div class="d-flex flex-column">
+                    <div class="p-3 text-white">
+                        <h5>Dashboard</h5>
+                    </div>
+                    <nav class="nav flex-column">
+                        <a class="nav-link {% block my-products-active %}{% endblock my-products-active %}" href="{% url 'home' %}" onclick="showSection('products')">
+                            <i class="fas fa-box me-2"></i>Home
+                        </a>
+                        <a class="nav-link {% block shop-active %}{% endblock shop-active %}" href="{% url "shop" %}" onclick="showSection('profile')">
+                            <i class="fas fa-store"></i> Shop
+                        </a>
+                        {% comment %} <a class="nav-link {% block my-order-active %}{% endblock my-order-active %}" href="{% url "my_order" %}" onclick="showSection('profile')">
+                            <i class="fas fa-lock me-2"></i>My Order
+                        </a>
+                        
+                        <a class="nav-link {% block reset3-active %}{% endblock reset3-active %}" href="#" onclick="showSection('profile')">
+                            <i class="fas fa-lock me-2"></i>Contact
+                        </a>
+                        <a class="nav-link {% block reset4-active %}{% endblock reset4-active %}" href="#" onclick="showSection('profile')">
+                            <i class="fas fa-lock me-2"></i>About
+                        </a> {% endcomment %}
+                        <a class="nav-link {% block cart-active %}{% endblock cart-active %}" href="{% url 'buyer_cart' %}" onclick="showSection('profile')">
+                            <i class="fas fa-shopping-cart"></i> Cart
+                        </a>
+                        {% if request.user.is_authenticated %}
+                        <a class="nav-link {% block reset-active %}{% endblock reset-active %}" href="{% url 'reset_password' %}" onclick="showSection('profile')">
+                            <i class="fas fa-lock me-2"></i>Reset Password
+                        </a>
+                        <a class="nav-link {% block my-profile-active %}{% endblock my-profile-active %}" href="{% url "buyer_profile" %}" onclick="showSection('profile')">
+                            <i class="fas fa-lock me-2"></i>My Profile
+                        </a>
+                        <a class="nav-link" href="{% url "logout" %}">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                        {% else %}
+                        <a class="nav-link" href="{% url "signup" %}" onclick="alert('Logging...')">
+                            <i class="fas fa-sign-out-alt me-2"></i>Register
+                        </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 main-content">
+                {% block content %}
+                
+                {% endblock content %}
+
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const currentImage = document.getElementById('currentProfileImage');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    currentImage.style.display = 'none';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function enableEdit() {
+            const form = document.getElementById('profileForm');
+            const inputs = form.querySelectorAll('input, textarea, select');
+            const saveButtons = document.getElementById('saveButtons');
+            
+            inputs.forEach(input => {
+                input.disabled = false;
+            });
+            
+            saveButtons.style.display = 'block';
+        }
+
+        function cancelEdit() {
+            const form = document.getElementById('profileForm');
+            const inputs = form.querySelectorAll('input, textarea, select');
+            const saveButtons = document.getElementById('saveButtons');
+            
+            inputs.forEach(input => {
+                input.disabled = true;
+            });
+            
+            saveButtons.style.display = 'none';
+        }
+    </script>
+   
+</body>
+</html>

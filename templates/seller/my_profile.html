@@ -1,0 +1,62 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block my-profile-active %}active{% endblock my-profile-active %}
+
+{% block content %}
+  <!-- Profile Section -->
+  <div class="profile-section active-section">
+    <h2 class="mb-4">My Profile</h2>
+    <div class="card">
+      <div class="card-body">
+        <form method="POST" action="{% url "seller_profile" %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="productImage" class="form-label">User Image</label>
+            <br>
+            <img src="{{ seller.image.url }}" alt="Profile Image" width="150" height="150">
+           <br>
+           <br>
+            {{ form.image }}
+        </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">First Name</label>
+              {{ form.first_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Last Name</label>
+              {{ form.last_name }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <p class="form-control">{{ seller.email }}</p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Phone</label>
+            {{ form.phone_number }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            {{ form.address }}
+          </div>
+          <div class="mb-3">
+            <label for="productImage" class="form-label">Bio</label>
+            {{ form.bio }}
+        </div>
+        <div class="mb-3">
+          <label for="productImage" class="form-label">Date of Birth</label>
+          {{ form.date_of_birth }}
+      </div>
+      <div class="mb-3">
+        <label for="productImage" class="form-label">Gender</label>
+        {{ form.gender }}
+    </div>
+          <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

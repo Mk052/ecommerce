@@ -1,0 +1,91 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block content%}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Add New Product</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'add_product' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="productName" class="form-label">Product Name</label>
+                            {{ form.title }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="productDescription" class="form-label">Description</label>
+                            {{ form.description }}
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="productPrice" class="form-label">Price</label>
+                                {{ form.price }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="productQuantity" class="form-label">Quantity in Stock</label>
+                                {{ form.stock }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="productCategory" class="form-label">Category</label>
+                            {{ form.category }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="productImage" class="form-label">Product Image</label>
+                            {{ form.image }}
+                            <div id="imagePreviewContainer">
+                                <img id="imagePreview" src="{}" alt="Product image preview" class="mt-2" style="max-width: 100%; display: none;" />
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-secondary me-md-2" onclick="resetImagePreview()">Reset</button>
+                            <button type="submit" class="btn btn-primary">Add Product</button>
+                        </div>
+                    </form>
+                    {% if messages %}
+                            {% for i in messages %}
+                              <p>{{ i }}</p>
+                            {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% comment %} 
+<script>
+    // JavaScript to preview the uploaded image
+    function previewImage(input) {
+        const preview = document.getElementById('imagePreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+        }
+    }
+
+    function resetImagePreview() {
+        const preview = document.getElementById('imagePreview');
+        preview.src = '#';
+        preview.style.display = 'none';
+    }
+</script>
+{% endblock %} {% endcomment %}
+
+
+    
+    {% endblock %}

@@ -1,0 +1,227 @@
+{% extends 'base1_dashboard.html' %}
+{% load static %}
+
+{% block my-products-active %}active{% endblock my-products-active %}
+
+{% block content %}
+<br>
+  <!-- Products Section -->
+{% if messages %}
+    {% for i in messages %}
+     <p>{{ i }}</p>
+    {% endfor %}
+{% endif %}
+  <div class="products-section active-section">
+    {% comment %} <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>My Products</h2>
+      <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>Add New Product</button>
+    </div> {% endcomment %}
+    <div id="header-carousel" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+          <div class="carousel-item active" style="height: 410px;">
+              <img class="img-fluid" src="{% static 'img/carousel-1.jpg' %}" alt="Image">
+              <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                  <div class="p-3" style="max-width: 700px;">
+                      <h4 class="text-light text-uppercase font-weight-medium mb-3">10% Off Your First Order</h4>
+                      <h3 class="display-4 text-white font-weight-semi-bold mb-4">Fashionable Dress</h3>
+                      <a href="" class="btn btn-light py-2 px-3">Shop Now</a>
+                  </div>
+              </div>
+          </div>
+          <div class="carousel-item" style="height: 410px;">
+              <img class="img-fluid" src="img/carousel-2.jpg" alt="Image">
+              <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                  <div class="p-3" style="max-width: 700px;">
+                      <h4 class="text-light text-uppercase font-weight-medium mb-3">10% Off Your First Order</h4>
+                      <h3 class="display-4 text-white font-weight-semi-bold mb-4">Reasonable Price</h3>
+                      <a href="" class="btn btn-light py-2 px-3">Shop Now</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <a class="carousel-control-prev" href="#header-carousel" data-slide="prev">
+        <div class="btn btn-dark" style="width: 45px; height: 45px;">
+            <span class="carousel-control-prev-icon mb-n2"></span>
+        </div>
+    </a>
+    <a class="carousel-control-next" href="#header-carousel" data-slide="next">
+        <div class="btn btn-dark" style="width: 45px; height: 45px;">
+            <span class="carousel-control-next-icon mb-n2"></span>
+        </div>
+    </a>
+    </div>
+    <br>
+    <br>
+    <div class="text-center mb-4">
+      <h2 class="section-title px-5"><span class="px-2">Latest Products</span></h2>
+  </div>
+    
+    <div class="row">
+      {% for product in products %}
+        <div class="col-4">
+          <div class="card" style="width: 18rem;">
+            <img src="{{ product.image.url }}" height="100px" class="card-img-top img-fluid" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">{{ product.title }}</h5>
+              {% comment %} <p class="card-text">{{ product.description }}</p> {% endcomment %}
+              <a href="{% url "product_detail" product.id %}" class="btn btn-primary">view detail</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <br>
+    <br>
+    <div class="text-center mb-4">
+      <h2 class="section-title px-5"><span class="px-2">Categories</span></h2>
+  </div>
+    <div class="container-fluid pt-5">
+      <div class="row px-xl-5 pb-3">
+          <div class="col-lg-4 col-md-6 pb-1">
+              <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
+                  <p class="text-right">15 Products</p>
+                  <a href="" class="cat-img position-relative overflow-hidden mb-3">
+                      <img class="img-fluid" src="{% static 'img/cat-1.jpg' %}" alt="">
+                  </a>
+                  <h5 class="font-weight-semi-bold m-0">Men's dresses</h5>
+              </div>
+          </div>
+          <div class="col-lg-4 col-md-6 pb-1">
+              <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
+                  <p class="text-right">15 Products</p>
+                  <a href="" class="cat-img position-relative overflow-hidden mb-3">
+                      <img class="img-fluid" src="{% static 'img/cat-2.jpg' %}" alt="">
+                  </a>
+                  <h5 class="font-weight-semi-bold m-0">Women's dresses</h5>
+              </div>
+          </div>
+          <div class="col-lg-4 col-md-6 pb-1">
+              <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
+                  <p class="text-right">15 Products</p>
+                  <a href="" class="cat-img position-relative overflow-hidden mb-3">
+                      <img class="img-fluid" src="{% static 'img/cat-3.jpg' %}" alt="">
+                  </a>
+                  <h5 class="font-weight-semi-bold m-0">Baby's dresses</h5>
+              </div>
+          </div>
+          <div class="col-lg-4 col-md-6 pb-1">
+              <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
+                  <p class="text-right">15 Products</p>
+                  <a href="" class="cat-img position-relative overflow-hidden mb-3">
+                      <img class="img-fluid" src="{% static 'img/cat-4.jpg' %}" alt="">
+                  </a>
+                  <h5 class="font-weight-semi-bold m-0">Accerssories</h5>
+              </div>
+          </div>
+          <div class="col-lg-4 col-md-6 pb-1">
+              <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
+                  <p class="text-right">15 Products</p>
+                  <a href="" class="cat-img position-relative overflow-hidden mb-3">
+                      <img class="img-fluid" src="{% static 'img/cat-5.jpg' %}" alt="">
+                  </a>
+                  <h5 class="font-weight-semi-bold m-0">Bags</h5>
+              </div>
+          </div>
+          <div class="col-lg-4 col-md-6 pb-1">
+              <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
+                  <p class="text-right">15 Products</p>
+                  <a href="" class="cat-img position-relative overflow-hidden mb-3">
+                      <img class="img-fluid" src="{% static 'img/cat-6.jpg' %}" alt="">
+                  </a>
+                  <h5 class="font-weight-semi-bold m-0">Shoes</h5>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- Categories End -->
+  <!-- Featured Start -->
+  <div class="container-fluid pt-5">
+    <div class="row px-xl-5 pb-3">
+        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+            <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
+                <h1 class="fa fa-check text-primary m-0 mr-3"></h1>
+                <h5 class="font-weight-semi-bold m-0">Quality Product</h5>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+            <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
+                <h1 class="fa fa-shipping-fast text-primary m-0 mr-2"></h1>
+                <h5 class="font-weight-semi-bold m-0">Free Shipping</h5>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+            <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
+                <h1 class="fas fa-exchange-alt text-primary m-0 mr-3"></h1>
+                <h5 class="font-weight-semi-bold m-0">14-Day Return</h5>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+            <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
+                <h1 class="fa fa-phone-volume text-primary m-0 mr-3"></h1>
+                <h5 class="font-weight-semi-bold m-0">24/7 Support</h5>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Featured End -->
+
+
+
+    {% comment %} <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Product ID</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>#P12345</td>
+                <td>
+                  <img src="/api/placeholder/50/50" alt="Product A" class="img-thumbnail" />
+                </td>
+                <td>Product A</td>
+                <td>Electronics</td>
+                <td>$99.99</td>
+                <td>15</td>
+                <td>
+                  <span class="badge bg-success">Active</span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-primary me-1"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>#P12346</td>
+                <td>
+                  <img src="/api/placeholder/50/50" alt="Product B" class="img-thumbnail" />
+                </td>
+                <td>Product B</td>
+                <td>Clothing</td>
+                <td>$49.99</td>
+                <td>8</td>
+                <td>
+                  <span class="badge bg-warning">Low Stock</span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-primary me-1"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div> {% endcomment %}
+  </div>
+{% endblock content %}
