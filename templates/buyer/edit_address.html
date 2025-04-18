@@ -1,0 +1,46 @@
+{% extends 'base1_dashboard.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Address</h2>
+    <form method="POST" action="{% url 'edit_address' %}">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label for="first_name">First Name</label>
+                {{ form.first_name }}
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                {{ form.last_name }}
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="{{ form.phone_number.id_for_label }}">Mobile No</label>
+                {{ form.phone_number }}
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="{{ form.address_line.id_for_label }}">Address Line</label>
+                {{ form.address_line }}
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="{{ form.country.id_for_label }}">Country</label>
+                {{ form.country }}
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="{{ form.city.id_for_label }}">City</label>
+                {{ form.city }}
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="{{ form.state.id_for_label }}">State</label>
+                {{ form.state }}
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="{{ form.pin_code.id_for_label }}">Pin Code</label>
+                {{ form.pin_code }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success">Save Address</button>
+        <a href="{% url 'checkout' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -4,6 +4,96 @@
 {% block my-profile-active %}active{% endblock my-profile-active %}
 
 {% block content %}
+   <div class="container">
+    <!-- Profile Cover Background -->
+    <div class="profile-cover rounded-top"></div>
+
+    <!-- Profile Section -->
+    <div class="bg-white shadow rounded-bottom p-4">
+        <div class="row">
+            <form method="POST" action="{% url 'seller_profile' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Profile Image Section -->
+                <div class="col-md-4 text-center profile-image-container">
+                    <div class="position-relative">
+                        <!-- Profile Image with Cover Effect -->
+                        <img src="{% if seller.image %}{{ seller.image.url }}{% else %}{% static 'img/download.png' %}{% endif %}" 
+                             alt="Profile Image" 
+                             class="profile-image mb-3" 
+                             id="currentProfileImage">
+
+                        <!-- Change Photo Button -->
+                        <div>
+                            <label class="btn-change-photo" for="profileImageInput">
+                                <i class="fas fa-camera me-2"></i> Change Photo
+                            </label>
+                            <input type="file" class="d-none" id="profileImageInput" name="image" accept="image/*" onchange="previewImage(event)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Details -->
+                <div class="col-md-8">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label><br>
+                            <p class="form-control">{{ seller.email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            {{ form.phone_number }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        {{ form.address }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Bio</label>
+                        {{ form.bio }}
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Date of Birth</label>
+                            {{ form.date_of_birth }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Gender</label>
+                            {{ form.gender }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+   {% endblock %} 
+
+
+{% comment %} {% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block my-profile-active %}active{% endblock my-profile-active %}
+
+{% block content %}
   <!-- Profile Section -->
   <div class="profile-section active-section">
     <h2 class="mb-4">My Profile</h2>
@@ -59,4 +149,4 @@
       </div>
     </div>
   </div>
-{% endblock content %}
+{% endblock content %} {% endcomment %}

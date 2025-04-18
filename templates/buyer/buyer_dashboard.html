@@ -24,7 +24,7 @@
                   <div class="p-3" style="max-width: 700px;">
                       <h4 class="text-light text-uppercase font-weight-medium mb-3">10% Off Your First Order</h4>
                       <h3 class="display-4 text-white font-weight-semi-bold mb-4">Fashionable Dress</h3>
-                      <a href="" class="btn btn-light py-2 px-3">Shop Now</a>
+                      <a href="{% url 'shop' %}" class="btn btn-light py-2 px-3">Shop Now</a>
                   </div>
               </div>
           </div>
@@ -59,12 +59,12 @@
     <div class="row">
       {% for product in products %}
         <div class="col-4">
-          <div class="card" style="width: 18rem;">
-            <img src="{{ product.image.url }}" height="100px" class="card-img-top img-fluid" alt="..." />
+          <div class="card">
+            <img src="{{ product.image.url }}" style="height: 200px; width: 250px" class="card-img-top img-fluid" alt="..." />
             <div class="card-body">
               <h5 class="card-title">{{ product.title }}</h5>
               {% comment %} <p class="card-text">{{ product.description }}</p> {% endcomment %}
-              <a href="{% url "product_detail" product.id %}" class="btn btn-primary">view detail</a>
+              <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">view detail</a>
             </div>
           </div>
         </div>

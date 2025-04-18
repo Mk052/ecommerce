@@ -1,17 +1,30 @@
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
-from eshop.forms import CustomUserCreationForm, ResetPasswordForm, AddProductForm, BuyerProfileForm
+from django.views.generic import TemplateView, View
+from eshop.forms import CustomUserCreationForm, ResetPasswordForm, AddProductForm, BuyerProfileForm, BillingAddressForm
 from django.contrib.auth import authenticate, login, logout
-from eshop.models import User, Product, Cart, CartItem
+from eshop.models import User, Product, Cart, CartItem, Billing_Address, Order, OrderItem
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from eshop.utils import generate_token, send_verification_mail, generate_forgotPassword_token, send_verification_mail1
 
+import stripe
+from django.conf import settings
+from django.http import JsonResponse
+from django.urls import reverse
+from django.utils.decorators import method_decorator 
+from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
+from django.views.decorators.cache import cache_page
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 # ************************************************** Reset(Change) Password Views (start) ********************************************* #
-class ResetPasswordView(TemplateView, LoginRequiredMixin):
+class ResetPasswordView(LoginRequiredMixin, TemplateView):
+    login_url = '/login/'
+    redirect_field_name = 'next'
+
     def get_template_names(self, request):
         if request.user.user_type == "Seller":
             template_name = "seller/reset_password.html"
@@ -156,12 +169,68 @@ class ProductDetailView(TemplateView):
             'product': product
         }
         return render(request, self.template_name, context)
-
+    
 
 class MyOrderView(LoginRequiredMixin, TemplateView):
-    template_name = "buyer/my_order.html"
-    login_url = "/login/"
+    login_url = '/login/'
+    redirect_field_name = 'next'
+    template_name = 'buyer/my_order.html'
 
+    def post(self, request, *args, **kwargs):
+        if request.user.user_type != "Buyer":
+            return redirect('login')
+
+        shipping_address = Billing_Address.objects.filter(user=request.user).first()
+        
+        cart_items = CartItem.objects.filter(cart__user=request.user).select_related('product')
+        
+        if not cart_items.exists():
+            return redirect('buyer_cart')  # Redirect back if no items
+
+        total_price = sum(item.total_price() for item in cart_items)
+
+        order = Order.objects.create(
+            user=request.user,
+            shipping_address=shipping_address,
+            total_price=total_price
+        )
+
+        order_items = [
+            OrderItem(order=order, product=item.product,  
+                      product_image=item.product.image.url if item.product.image else "/static/image/download.jpeg",
+                      price=item.total_price(), quantity=item.quantity)
+            for item in cart_items
+        ]
+        OrderItem.objects.bulk_create(order_items)
+        print(order_items," my order")
+
+        cart_items.delete()  # Remove items after order is placed
+
+        return redirect('create_payment', order.id)  # Redirect to My Orders page
+
+# class MyOrderView(LoginRequiredMixin, TemplateView):
+#     template_name = "buyer/my_order.html"
+#     # login_url = "/login/"
+
+#     def get(self, request):
+#         if request.user.user_type != "Buyer":
+#             return redirect('login')
+#         shipping_address = Billing_Address.objects.filter(user=request.user).first()
+#         # cart = Cart.objects.filter(user=request.user
+#         cart_item = CartItem.objects.filter(cart__user=request.user)
+        
+#         total_price = sum(item.total_price() for item in cart_item)
+#         order = Order.objects.create(user=request.user, shipping_address=shipping_address, total_price=total_price)
+#         order.save()
+
+#         for item in cart_item:
+#             order_item = OrderItem.objects.create(order=order, product=item.product, price = item.total_price(), quantity=item.quantity)
+#         order_item = OrderItem.objects.filter(order=order)
+#         print("order", order)
+#         print("orderitem", order_item)
+#         cart_item.delete()
+#         return render(request, self.template_name, {'order_items': order_item})
+    
 # ************************************************** Buyer Cart Views (start) ********************************************* #
 
 
@@ -172,7 +241,9 @@ class DisplayCartView(LoginRequiredMixin, TemplateView):
     def get(self, request):
         cart = Cart.objects.filter(user=request.user).first()
         cart_item = CartItem.objects.filter(cart=cart)
-        return render(request, self.template_name, {'cart_item': cart_item})
+        total_cart_price = sum(item.total_price() for item in cart_item)
+        shipping_charge = total_cart_price + 40
+        return render(request, self.template_name, {'cart_item': cart_item, 'total_cart_price': total_cart_price, 'shipping_charge': shipping_charge})
 
 
 class AddToCartView(LoginRequiredMixin, TemplateView):
@@ -183,22 +254,31 @@ class AddToCartView(LoginRequiredMixin, TemplateView):
         cart = Cart.objects.filter(user=request.user).first()
         if not cart:
             cart = Cart.objects.create(user=request.user)
-        CartItem.objects.get_or_create(cart=cart, product=product)
+        CartItem.objects.get_or_create(cart=cart, product=product) 
+        # product.stock -= 1
+        # product.save()  
         return redirect('/shop')
     
 
 class IncreaseQuantityToCartView(TemplateView):
 
     def post(self, request, cart_item_id):
-        cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()
+        cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()   
+        # cart_item = CartItem.object.filter(product__stock)
+        # print(product, "product")
         print(cart_item.quantity)
         if cart_item.product.stock > cart_item.quantity:
+            
+            # print(cart_item.product.stock, "increae product quantity")
             if cart_item.quantity >= 0:
+                # cart_item.product.stock -= 1
+                # cart_item.product.save()
                 cart_item.quantity += 1
+                print(cart_item.quantity, " in pro ")
                 cart_item.save()
         else:
             messages.info(request, "you can't order the product or product out of stock")
-        print("after increace",cart_item.quantity)
+        # print("after increace",cart_item.quantity)
         return redirect('buyer_cart')
 
 
@@ -206,11 +286,17 @@ class DecreaseQuantityToCartView(TemplateView):
 
     def post(self, request, cart_item_id):
         cart_item = CartItem.objects.filter(id=cart_item_id, cart__user=request.user).first()
-        print(cart_item.quantity)
+        # print(cart_item.quantity)
+        
         if cart_item.quantity > 1:
+            # cart_item.product.stock += 1
+            # cart_item.product.save()
+            # print(cart_item.product.stock, "increae product quantity")
             cart_item.quantity -= 1
+            # print(cart_item.quantity, " out pro q")
+
             cart_item.save()
-        print("after decresse", cart_item.quantity)
+        # print("after decresse", cart_item.quantity)
         return redirect('buyer_cart')            
 
 
@@ -248,7 +334,7 @@ class ShopView(TemplateView):
                 # print(maxm)
             print(minm, maxm)
             products = Product.objects.filter(price__gte=minm, price__lte=maxm)
-        return render(request, self.template_name, {'products': products})
+        return render(request, self.template_name, {'products': products, "price_ranges" : price_ranges})
     
     def post(self, request):
         search_item = request.POST.get('search')
@@ -280,16 +366,42 @@ class ShopView(TemplateView):
             products = Product.objects.all().order_by('-created_at')
         return render(request, self.template_name, {'products': products})
 
-
+@method_decorator(cache_page(60*10), name='dispatch')
 class HomeView(TemplateView):
     template_name = "buyer/buyer_dashboard.html"
 
     def get(self, request):
+        print("get")
         products = Product.objects.all()
         context = {
             'products': products,
         }
         return render(request, self.template_name, context)
+
+    # Database cache
+    # def get(self, request):
+    #     products = cache.get('product_list')
+    #     print("get product", products)
+
+    #     if not products:
+    #         products = Product.objects.all()
+    #         cache.set('product_list', products, timeout=60)
+    #         print("set product", products)
+    #     context = {
+    #         'products': products,
+    #     }
+    #     return render(request, self.template_name, context)
+
+    # File based cache
+    # def get(self, request):
+       
+    #     products = Product.objects.all()
+    #     cache.set('product_list', products, timeout=60)
+    #     print("set product", products)
+    #     context = {
+    #         'products': products,
+    #     }
+    #     return render(request, self.template_name, context)
 
 
 # ************************************************** Login, Signup, Logout  Views (start) ********************************************* #
@@ -465,3 +577,150 @@ class ProductView(TemplateView):
         print(products)
         return render(request, self.template_name, {'products': products})
 
+
+# class CheckoutView(TemplateView):
+#     template_name = "buyer/checkout.html"
+
+#     def get(self, request):
+#         cart = Cart.objects.filter(user=request.user).first()
+#         print(cart)
+#         cart_item = CartItem.objects.filter(cart=cart)
+#         total_cart_price = sum(item.total_price() for item in cart_item)
+#         shipping_charge = total_cart_price + 40
+#         print(cart_item)
+#         address = Billing_Address.objects.filter(user=request.user).first()
+#         print(address)
+#         form = BillingAddressForm(instance=address)
+#         return render(request, self.template_name, {'form': form, 'cart_items': cart_item, 'total_cart_price': total_cart_price, 'shipping_charge': shipping_charge})
+    
+#     def post(self, request):
+#         cart = Cart.objects.filter(user=request.user).first()
+#         cart_item = CartItem.objects.filter(cart=cart)
+#         total_cart_price = sum(item.total_price() for item in cart_item)
+#         shipping_charge = total_cart_price + 40
+#         address = Billing_Address.objects.filter(user=request.user).first()
+#         form = BillingAddressForm(request.POST, instance=address)
+#         print(form.is_valid())
+#         if form.is_valid():
+#             form = form.save(commit=False)
+#             form.user = request.user
+#             form.save()
+            
+#             return render(request, self.template_name, {'form': form, 'cart_items': cart_item, 'total_cart_price': total_cart_price, 'shipping_charge': shipping_charge})
+#         form = BillingAddressForm(instance=address)
+#         print(form.errors)
+#         return render(request, self.template_name, {'form': form, 'cart_items': cart_item, 'total_cart_price': total_cart_price, 'shipping_charge': shipping_charge})
+
+
+class CheckoutView(TemplateView):
+    template_name = "buyer/checkout.html"
+
+    def get(self, request):
+        cart = Cart.objects.filter(user=request.user).first()
+        cart_items = CartItem.objects.filter(cart=cart)
+        total_cart_price = sum(item.total_price() for item in cart_items)
+        shipping_charge = total_cart_price + 40
+
+        address = Billing_Address.objects.filter(user=request.user).first()
+        form = BillingAddressForm(instance=address)
+
+
+        step = 1  # Default: Bag step
+        if cart_items.exists():
+            step = 2  # Move to Address Step
+        if address:
+            step = 3  # Move to Payment Step
+
+        return render(request, self.template_name, {
+            'form': form, 'cart_items': cart_items, 'total_cart_price': total_cart_price,
+            'shipping_charge': shipping_charge, 'address': address, 'step': step
+        })
+
+    def post(self, request):
+        address = Billing_Address.objects.filter(user=request.user).first()
+        form = BillingAddressForm(request.POST, instance=address)
+
+        if form.is_valid():
+            billing_address = form.save(commit=False)
+            billing_address.user = request.user  
+            billing_address.save()
+            return redirect('checkout')  
+
+        return render(request, self.template_name, {'form': form})
+
+
+
+
+
+class EditAddressView(TemplateView):
+    template_name = "buyer/edit_address.html"
+
+    def get(self, request):
+        address = Billing_Address.objects.filter(user=request.user).first()
+        form = BillingAddressForm(instance=address)
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        address = Billing_Address.objects.filter(user=request.user).first()
+        form = BillingAddressForm(request.POST, instance=address)
+
+        if form.is_valid():
+            form.save()
+            return redirect("checkout")  # Redirect back to checkout after updating
+
+        return render(request, self.template_name, {"form": form})
+    
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CreatePaymentView(LoginRequiredMixin, View):
+
+    def get(self, request, order_id):
+        order = Order.objects.get(id=order_id, user=request.user)
+        success_url = "http://127.0.0.1:8000/buyer/list/my_ordered_product"
+        cancel_url = "http://127.0.0.1:8000/buyer/checkout/"
+
+        # Create Stripe Checkout session
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {'name': 'Order #{}'.format(order.id)},
+                        'unit_amount': int(order.total_price * 100),
+                    },
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=success_url,
+            cancel_url=cancel_url,
+        )
+
+        return redirect(session.url)
+
+
+# # views.py
+# class PaymentSuccessView(TemplateView):
+#     def get(self, request):
+#         return render(request, "buyer/payment_success.html")
+
+
+class AllMyOrderedProductView(LoginRequiredMixin, TemplateView):
+    template_name = "buyer/my_order.html"
+    login_url = '/login/'
+    redirect_field_name = 'next'
+
+    def handle_no_permission(self):
+        return redirect(f"{self.login_url}?next={self.request.path}")
+
+    def get(self, request, *args, **kwargs):
+        if request.user.user_type != "Buyer":
+            return redirect('login')
+
+        # Fetch existing orders of the logged-in user
+        # order = Order.objects.filter(user=request.user).first()
+        order_items = OrderItem.objects.filter(order__user=request.user)
+        print("all order_items", order_items)
+
+        return render(request, self.template_name, {'order_items': order_items})

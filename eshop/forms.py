@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
-from eshop.models import User, Product
+from eshop.models import User, Product, Billing_Address
 from django.core.exceptions import ValidationError
 
 
@@ -239,4 +239,24 @@ class BuyerProfileForm(forms.ModelForm):
                 'placeholder': 'Date of Birth',
             })
             
+        }
+
+
+class BillingAddressForm(forms.ModelForm):
+    class Meta:
+        model = Billing_Address
+        fields = [
+            "first_name", "last_name", "phone_number",
+            "address_line", "country", "city",
+            "state", "pin_code"
+        ]
+        widgets = {
+            "first_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "John"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Doe"}),
+            "phone_number": forms.TextInput(attrs={"class": "form-control", "placeholder": " +91"}),
+            "address_line": forms.TextInput(attrs={"class": "form-control", "placeholder": "123 Street"}),
+            "country": forms.TextInput(attrs={"class": "form-control", "placeholder": "India"}),
+            "city": forms.TextInput(attrs={"class": "form-control", "placeholder": "New York"}),
+            "state": forms.TextInput(attrs={"class": "form-control", "placeholder": "New York"}),
+            "pin_code": forms.TextInput(attrs={"class": "form-control", "placeholder": "123"}),
         }

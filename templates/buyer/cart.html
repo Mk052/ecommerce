@@ -5,6 +5,7 @@
 
 {% block content %}
 <!-- Cart Start -->
+{% if cart_item %}
  <div class="container-fluid pt-5">
     <div class="row px-xl-5">
         <div class="col-lg-8 table-responsive mb-5">
@@ -59,8 +60,7 @@
                         </td>
                 
                         <!-- Subtotal -->
-                        <td class="align-middle">Rs. {{ cart.product.price }}</td>
-                
+                        <td class="align-middle">Rs. {{ cart.total_price }}</td>
                         <!-- Delete Item -->
                         <td class="align-middle">
                             <form method="POST" action="{% url 'delete_cart' cart.id %}">
@@ -73,7 +73,6 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-                
             </table>
             <br>
             {% if messages %}
@@ -82,15 +81,7 @@
                 {% endfor %}
             {% endif %}
         </div>
-        {% comment %} <div class="col-lg-4">
-            <form class="mb-5" action="">
-                <div class="input-group">
-                    <input type="text" class="form-control p-4" placeholder="Coupon Code">
-                    <div class="input-group-append">
-                        <button class="btn btn-primary">Apply Coupon</button>
-                    </div>
-                </div>
-            </form>
+        <div class="col-lg-4">
             <div class="card border-secondary mb-5">
                 <div class="card-header bg-secondary border-0">
                     <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
@@ -98,23 +89,30 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-3 pt-1">
                         <h6 class="font-weight-medium">Subtotal</h6>
-                        <h6 class="font-weight-medium">$150</h6>
+                        <h6 class="font-weight-medium">₹{{ total_cart_price }}</h6>
                     </div>
                     <div class="d-flex justify-content-between">
                         <h6 class="font-weight-medium">Shipping</h6>
-                        <h6 class="font-weight-medium">$10</h6>
+                        <h6 class="font-weight-medium">₹40</h6>
                     </div>
                 </div>
                 <div class="card-footer border-secondary bg-transparent">
                     <div class="d-flex justify-content-between mt-2">
                         <h5 class="font-weight-bold">Total</h5>
-                        <h5 class="font-weight-bold">$160</h5>
+                        <h5 class="font-weight-bold">₹{{ shipping_charge }}</h5>
                     </div>
-                    <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
+                    <a href="{% url 'checkout' %}" class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</a>
                 </div>
             </div>
-        </div> {% endcomment %}
+        </div> 
     </div>
 </div>
+{% else %}
+<!-- Empty Cart Message -->
+<div class="container text-center mt-5">
+    <h2 class="text-danger">Your cart is empty!</h2>
+    <p class="lead">Start shopping now and add your favorite products to the cart.</p>
+    <a href="{% url 'shop' %}" class="btn btn-primary mt-3">Go to Shop</a>
+</div>
+{% endif %}
 {% endblock %}
-<!-- Cart End -->

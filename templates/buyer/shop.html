@@ -13,43 +13,43 @@
                 <div class="border-bottom mb-4 pb-4">
                     <h5 class="font-weight-semi-bold mb-3">Filter by Price</h5>
                 </div>
-                <form action="{% url "shop" %}" method="GET">
+                <form action="{% url 'shop' %}" method="GET">
                    
                     <!-- Price Start -->
                                 <!-- All Price Option -->
                                 <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                    <input type="checkbox" value="all" class="custom-control-input" id="price-all" checked>
+                                    <input type="checkbox" value="all"  class="custom-control-input" id="price-all" {% if 'All Price' in price_ranges %}checked{% endif %}>
                                     <label class="custom-control-label" for="price-all">All Price</label>
                                     <span class="badge border font-weight-normal">1000</span>
                                 </div>
                         
-                                <!-- Price Range Options -->
+                                <!-- Price Range Options -->{% if '0-1000' in price_ranges %}checked{% endif %}
                                 <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                    <input type="checkbox" name="price_range" value="0-1000" class="custom-control-input" id="price-1">
+                                    <input type="checkbox" name="price_range" value="0-1000" class="custom-control-input" id="price-1" {% if '0-1000' in price_ranges %}checked{% endif %}>
                                     <label class="custom-control-label" for="price-1">₹0 - ₹1000</label>
                                     <span class="badge border font-weight-normal">150</span>
                                 </div>
                         
                                 <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                    <input type="checkbox" name="price_range" value="1000-2000" class="custom-control-input" id="price-2">
+                                    <input type="checkbox" name="price_range" value="1000-2000" class="custom-control-input" id="price-2" {% if '1000-2000' in price_ranges %}checked{% endif %}>
                                     <label class="custom-control-label" for="price-2">₹1000 - ₹2000</label>
                                     <span class="badge border font-weight-normal">295</span>
                                 </div>
                         
                                 <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                    <input type="checkbox" name="price_range" value="2000-3000" class="custom-control-input" id="price-3">
+                                    <input type="checkbox" name="price_range" value="2000-3000" class="custom-control-input" id="price-3" {% if '2000-3000' in price_ranges %}checked{% endif %}>
                                     <label class="custom-control-label" for="price-3">₹2000 - ₹3000</label>
                                     <span class="badge border font-weight-normal">246</span>
                                 </div>
                         
                                 <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                    <input type="checkbox" name="price_range" value="3000-4000" class="custom-control-input" id="price-4">
+                                    <input type="checkbox" name="price_range" value="3000-4000" class="custom-control-input" id="price-4" {% if '3000-4000' in price_ranges %}checked{% endif %}>
                                     <label class="custom-control-label" for="price-4">₹3000 - ₹4000</label>
                                     <span class="badge border font-weight-normal">145</span>
                                 </div>
                         
                                 <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                                    <input type="checkbox" name="price_range" value="4000-5000" class="custom-control-input" id="price-5">
+                                    <input type="checkbox" name="price_range" value="4000-5000" class="custom-control-input" id="price-5" {% if '4000-5000' in price_ranges %}checked{% endif %}>
                                     <label class="custom-control-label" for="price-5">₹4000 - ₹5000</label>
                                     <span class="badge border font-weight-normal">168</span>
                                 </div>
@@ -185,9 +185,9 @@
                             <!-- Product Image Section with Hover Effect -->
                             <div class="product-img border p-0 position-relative" style="height: 200px;">
                                 <!-- Product Image -->
-                                <img class="w-100 h-100 product-main-img" 
+                                <img class=" product-main-img" 
                                     src="{% if product.image and product.image.url %}{{ product.image.url }}{% else %}{% static 'img/download.jpeg' %}{% endif %}" 
-                                    style="object-fit: cover;" 
+                                    style="height: 200px; width: 250px" 
                                     alt="{{ product.name }}">
                     
             

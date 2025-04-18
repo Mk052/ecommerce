@@ -5,8 +5,8 @@ from eshop.views import (
     ProductView, SellerDashboard, SellerProfile, CheckmailView, EmailVerification,
     ForgotPasswordDoneView, ForgotPasswordView, ResetPasswordView, AddProductView,
     ShopView, BuyerProfile, MyOrderView, ProductDetailView, AddToCartView,
-    DeleteCartView, DisplayCartView, IncreaseQuantityToCartView,
-    DecreaseQuantityToCartView)
+    DeleteCartView, DisplayCartView, IncreaseQuantityToCartView, CreatePaymentView,
+    DecreaseQuantityToCartView, CheckoutView, EditAddressView, AllMyOrderedProductView)
 
 urlpatterns = [
     path('', HomeView.as_view(), name="home"),
@@ -32,5 +32,10 @@ urlpatterns = [
     path('buyer/cart/', DisplayCartView.as_view(), name='buyer_cart'),
     path('buyer/cart/increase/<int:cart_item_id>/', IncreaseQuantityToCartView.as_view(), name='buyer_cartitem_increase'),
     path('buyer/cart/decrease/<int:cart_item_id>/', DecreaseQuantityToCartView.as_view(), name='buyer_cartitem_decrease'),
-
+    path('buyer/checkout/', CheckoutView.as_view(), name='checkout'),
+    path('buyer/edit_address/', EditAddressView.as_view(), name='edit_address'),
+    path('buyer/list/my_ordered_product', AllMyOrderedProductView.as_view(), name='all_myordered_product'),
+    path("create-payment/<int:order_id>/", CreatePaymentView.as_view(), name="create_payment"),
+    # path("payment-success/", PaymentSuccessView.as_view(), name="payment_success"),
 ]
+
