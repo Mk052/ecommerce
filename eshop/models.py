@@ -140,6 +140,14 @@ class OrderItem(TimestampedModel):
     def __str__(self):
         return f"{self.product} ({self.quantity})"
 
-    
 
-
+class ProductOrder(TimestampedModel):
+    STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Completed", "Completed"),
+    ]
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    address = models.CharField(max_length=225)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Completed")

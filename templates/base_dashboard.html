@@ -109,6 +109,9 @@
                         <a class="nav-link {% block reset-active %}{% endblock reset-active %}" href="{% url 'reset_password' %}" onclick="showSection('profile')">
                             <i class="fas fa-lock me-2"></i>Reset Password
                         </a>
+                        <a class="nav-link {% block view-sold-items-active %}{% endblock view-sold-items-active %}" href="{% url 'view_sold_items' %}" onclick="showSection('profile')">
+                            <i class="fas fa-lock me-2"></i>View Sold Items
+                        </a>
                         <a class="nav-link" href="{% url "logout" %}">
                             <i class="fas fa-sign-out-alt me-2"></i>Logout
                         </a>
@@ -146,6 +149,23 @@
             preview.style.display = 'none';
             document.getElementById('productImage').value = '';
         }
+        document.addEventListener("DOMContentLoaded", function() {
+            const modal = document.getElementById("orderModal");
+
+            document.querySelectorAll(".view-order-btn").forEach(button => {
+                button.addEventListener("click", function() {
+                    document.getElementById("modalOrderId").textContent = this.dataset.orderId;
+                    document.getElementById("modalCustomerName").textContent = this.dataset.customerName;
+                    document.getElementById("modalCustomerEmail").textContent = this.dataset.customerEmail;
+                    document.getElementById("modalCustomerPhone").textContent = this.dataset.customerPhone;
+                    document.getElementById("modalShippingAddress").textContent = this.dataset.shippingAddress;
+                    document.getElementById("modalProductTitle").textContent = this.dataset.productTitle;
+                    document.getElementById("modalProductPrice").textContent = "₹" + this.dataset.productPrice;
+                    document.getElementById("modalProductQuantity").textContent = this.dataset.productQuantity;
+                    document.getElementById("modalOrderTotal").textContent = "₹" + this.dataset.orderTotal;
+                });
+            });
+        });
     </script>
    
 </body>

@@ -109,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -154,6 +154,10 @@ STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 
+# celery configuration
+
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+
 # Cache 
  
 # CACHES ={
@@ -163,13 +167,13 @@ STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 #     }
 # }
 
-CACHES = {
-    "default" : {
-        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": "/home/developer/Ecomm/ecommerce/cache_files",
-        "TIMEOUT": 10,
-        "OPTION": {
-            "MAX_ENTRIES": 10,
-        }
-    }
-}
+# CACHES = {
+#     "default" : {
+#         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+#         "LOCATION": "/home/developer/Ecomm/ecommerce/cache_files",
+#         "TIMEOUT": 10,
+#         "OPTION": {
+#             "MAX_ENTRIES": 10,
+#         }
+#     }
+# }

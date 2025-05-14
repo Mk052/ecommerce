@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, View
 from eshop.forms import CustomUserCreationForm, ResetPasswordForm, AddProductForm, BuyerProfileForm, BillingAddressForm
 from django.contrib.auth import authenticate, login, logout
-from eshop.models import User, Product, Cart, CartItem, Billing_Address, Order, OrderItem
+from eshop.models import User, Product, Cart, CartItem, Billing_Address, Order, OrderItem, ProductOrder
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.utils import timezone
@@ -17,6 +17,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
 from django.views.decorators.cache import cache_page
+from eshop.tasks import notify_seller_new_order
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -195,16 +196,16 @@ class MyOrderView(LoginRequiredMixin, TemplateView):
             total_price=total_price
         )
 
-        order_items = [
-            OrderItem(order=order, product=item.product,  
-                      product_image=item.product.image.url if item.product.image else "/static/image/download.jpeg",
-                      price=item.total_price(), quantity=item.quantity)
-            for item in cart_items
-        ]
-        OrderItem.objects.bulk_create(order_items)
-        print(order_items," my order")
+        # order_items = [
+        #     OrderItem(order=order, product=item.product,  
+        #               product_image=item.product.image.url if item.product.image else "/static/image/download.jpeg",
+        #               price=item.total_price(), quantity=item.quantity)
+        #     for item in cart_items
+        # ]
+        # OrderItem.objects.bulk_create(order_items)
+        # print(order_items," my order")
 
-        cart_items.delete()  # Remove items after order is placed
+        # cart_items.delete()  # Remove items after order is placed
 
         return redirect('create_payment', order.id)  # Redirect to My Orders page
 
@@ -365,8 +366,8 @@ class ShopView(TemplateView):
         else:
             products = Product.objects.all().order_by('-created_at')
         return render(request, self.template_name, {'products': products})
+    
 
-@method_decorator(cache_page(60*10), name='dispatch')
 class HomeView(TemplateView):
     template_name = "buyer/buyer_dashboard.html"
 
@@ -377,6 +378,19 @@ class HomeView(TemplateView):
             'products': products,
         }
         return render(request, self.template_name, context)
+
+# pre-view cache
+# @method_decorator(cache_page(60*10), name='dispatch')
+# class HomeView(TemplateView):
+#     template_name = "buyer/buyer_dashboard.html"
+
+#     def get(self, request):
+#         print("get")
+#         products = Product.objects.all()
+#         context = {
+#             'products': products,
+#         }
+#         return render(request, self.template_name, context)
 
     # Database cache
     # def get(self, request):
@@ -670,13 +684,32 @@ class EditAddressView(TemplateView):
 
         return render(request, self.template_name, {"form": form})
     
-
+class PaymentSuccessView(LoginRequiredMixin, View):
+    
+    def get(self, request):
+        cart_items = CartItem.objects.filter(cart__user=request.user)
+        order = Order.objects.filter(user=request.user).last()
+        order_items = [
+            OrderItem(order=order, product=item.product,  
+                      product_image=item.product.image.url if item.product.image else "/static/image/download.jpeg",
+                      price=item.total_price(), quantity=item.quantity)
+            for item in cart_items
+        ]
+        order_item = OrderItem.objects.bulk_create(order_items)
+        for item in order_item:
+            product_order = ProductOrder.objects.create(buyer=request.user, product=item.product, address=item.order.shipping_address, quantity=item.quantity)
+            print(product_order.id)
+            notify_seller_new_order.delay(product_order.id)
+        cart_items.delete()
+        return redirect('all_myordered_product')
+    
 @method_decorator(csrf_exempt, name='dispatch')
 class CreatePaymentView(LoginRequiredMixin, View):
 
     def get(self, request, order_id):
         order = Order.objects.get(id=order_id, user=request.user)
-        success_url = "http://127.0.0.1:8000/buyer/list/my_ordered_product"
+        
+        success_url = "http://127.0.0.1:8000/buyer/payment-success/"
         cancel_url = "http://127.0.0.1:8000/buyer/checkout/"
 
         # Create Stripe Checkout session
@@ -696,7 +729,7 @@ class CreatePaymentView(LoginRequiredMixin, View):
             success_url=success_url,
             cancel_url=cancel_url,
         )
-
+        
         return redirect(session.url)
 
 
@@ -720,7 +753,17 @@ class AllMyOrderedProductView(LoginRequiredMixin, TemplateView):
 
         # Fetch existing orders of the logged-in user
         # order = Order.objects.filter(user=request.user).first()
-        order_items = OrderItem.objects.filter(order__user=request.user)
-        print("all order_items", order_items)
+        order_items = OrderItem.objects.filter(order__user=request.user).order_by('-created_at')
+        # print("all order_items", order_items)
 
         return render(request, self.template_name, {'order_items': order_items})
+    
+
+class ViewSoldItemsView(LoginRequiredMixin, TemplateView):
+    login_url = '/login/'
+    template_name = 'seller/view_sold_items.html'
+
+    def get(self, request, *args, **kwargs):
+        
+        product_order = ProductOrder.objects.filter(product__user=request.user)
+        return render(request, self.template_name, {'product_items': product_order})

@@ -132,16 +132,16 @@
                 <div class="card-body">
                     <div class="form-group">
                         <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" name="payment" id="paypal">
-                            <label class="custom-control-label" for="paypal">Paypal</label>
+                            <input type="radio" class="custom-control-input" name="payment" id="paypal" checked>
+                            <label class="custom-control-label" for="paypal">Credit/Debit cards</label>
                         </div>
                     </div>
-                    <div class="form-group">
+                    {% comment %} <div class="form-group">
                         <div class="custom-control custom-radio">
                             <input type="radio" class="custom-control-input" name="payment" id="directcheck">
                             <label class="custom-control-label" for="directcheck">Cash on Delivery</label>
                         </div>
-                    </div>
+                    </div> {% endcomment %}
                     {% comment %} <form method="POST" action="{% url 'my_order' %}">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary btn-block">Place Order</button>

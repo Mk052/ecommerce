@@ -1,5 +1,6 @@
 {% extends 'base1_dashboard.html' %}
 {% load static %}
+{% load cache %}
 
 {% block my-products-active %}active{% endblock my-products-active %}
 
@@ -56,6 +57,20 @@
       <h2 class="section-title px-5"><span class="px-2">Latest Products</span></h2>
   </div>
     
+    {% comment %} <div class="row">
+      {% for product in products %}
+        <div class="col-4">
+          <div class="card">
+            <img src="{{ product.image.url }}" style="height: 200px; width: 250px" class="card-img-top img-fluid" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">{{ product.title }}</h5>
+              {% comment %} <p class="card-text">{{ product.description }}</p>
+              <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">view detail</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div> {% endcomment %}
     <div class="row">
       {% for product in products %}
         <div class="col-4">
@@ -63,7 +78,9 @@
             <img src="{{ product.image.url }}" style="height: 200px; width: 250px" class="card-img-top img-fluid" alt="..." />
             <div class="card-body">
               <h5 class="card-title">{{ product.title }}</h5>
-              {% comment %} <p class="card-text">{{ product.description }}</p> {% endcomment %}
+              {% cache 100 product %}
+                <p class="card-text">{{ product.description }}</p>
+              {% endcache%}
               <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">view detail</a>
             </div>
           </div>

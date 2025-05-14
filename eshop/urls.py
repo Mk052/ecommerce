@@ -6,7 +6,8 @@ from eshop.views import (
     ForgotPasswordDoneView, ForgotPasswordView, ResetPasswordView, AddProductView,
     ShopView, BuyerProfile, MyOrderView, ProductDetailView, AddToCartView,
     DeleteCartView, DisplayCartView, IncreaseQuantityToCartView, CreatePaymentView,
-    DecreaseQuantityToCartView, CheckoutView, EditAddressView, AllMyOrderedProductView)
+    DecreaseQuantityToCartView, CheckoutView, EditAddressView, AllMyOrderedProductView,
+    PaymentSuccessView, ViewSoldItemsView)
 
 urlpatterns = [
     path('', HomeView.as_view(), name="home"),
@@ -36,6 +37,7 @@ urlpatterns = [
     path('buyer/edit_address/', EditAddressView.as_view(), name='edit_address'),
     path('buyer/list/my_ordered_product', AllMyOrderedProductView.as_view(), name='all_myordered_product'),
     path("create-payment/<int:order_id>/", CreatePaymentView.as_view(), name="create_payment"),
-    # path("payment-success/", PaymentSuccessView.as_view(), name="payment_success"),
+    path("buyer/payment-success/", PaymentSuccessView.as_view(), name="payment_success"),
+    path("seller/view-sold-items/", ViewSoldItemsView.as_view(), name="view_sold_items"),
 ]
 
